@@ -317,6 +317,19 @@ namespace lm
 			}
 			std::cout << "\n";
 		}
+		//change from row major to column major
+		Mat4<T> transpose()
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = i + 1; j < 4; j++)
+				{
+					std::swap(matrix[i][j], matrix[j][i]);
+				}
+			}
+			return *this;
+			
+		}
 	};
 
 	template<class T> const Mat4<T> Mat4<T>::identity = Mat4<T>();
