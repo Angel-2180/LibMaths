@@ -262,45 +262,7 @@ namespace lm
 			return  pPrime.getVectorPart();
 		}
 
-		//Create Matrix from Quaternion
-		Mat4<T> toMatrix4() const
-		{
-			Mat4<T> m;
-			T xx = x * x;
-			T xy = x * y;
-			T xz = x * z;
-			T xw = x * w;
-			T yy = y * y;
-			T yz = y * z;
-			T yw = y * w;
-			T zz = z * z;
-			T zw = z * w;
-			T ww = w * w;
-			T wx = w * x;
-			T wy = w * y;
-			T wz = w * z;
-			m[0][0] = 1 - 2 *yy - 2 * zz;
-			m[0][1] = 2 * xy - 2 * wz;
-			m[0][2] = 2 * xz + 2 * wy;
-			m[0][3] = 0;
-
-			m[1][0] = 2 * xy + 2 * wz;
-			m[1][1] = 1 - 2 * xx - 2 * zz;
-			m[1][2] = 2 * yz - 2 * wx;
-			m[1][3] = 0;
-
-			m[2][0] = 2 * xz - 2 * wy;
-			m[2][1] = 2 * yz + 2 * wx;
-			m[2][2] = 1 - 2 * xx - 2 * yy;
-			m[2][3] = 0;
-
-			m[3][0] = 0;
-			m[3][1] = 0;
-			m[3][2] = 0;
-			m[3][3] = 1;
-
-			return m;
-		}
+	
 		//Create Matrix3 from Quaternion
 		Mat3<T> toMatrix3() const
 		{
@@ -333,47 +295,7 @@ namespace lm
 			return m;
 		}
 
-		//Create Quaternion from Matrix
-		Quaternion<T> fromMatrix4(const Mat4<T>& m)
-		{
-			T trace = m[0][0] + m[1][1] + m[2][2];
-			T s = 0.0f;
-
-			if (trace > 0)
-			{
-				s = sqrt(trace + 1.0f) * 2;
-				x = (m[2][1] - m[1][2]) / s;
-				y = (m[0][2] - m[2][0]) / s;
-				z = (m[1][0] - m[0][1]) / s;
-				w = 0.25f * s;
-			}
-			else if (m[0][0] > m[1][1] && m[0][0] > m[2][2])
-			{
-				s = sqrt(1.0f + m[0][0] - m[1][1] - m[2][2]) * 2;
-				x = 0.25f * s;
-				y = (m[0][1] + m[1][0]) / s;
-				z = (m[0][2] + m[2][0]) / s;
-				w = (m[2][1] - m[1][2]) / s;
-			}
-			else if (m[1][1] > m[2][2])
-			{
-				s = sqrt(1.0f + m[1][1] - m[0][0] - m[2][2]) * 2;
-				x = (m[0][1] + m[1][0]) / s;
-				y = 0.25f * s;
-				z = (m[1][2] + m[2][1]) / s;
-				w = (m[0][2] - m[2][0]) / s;
-			}
-			else
-			{
-				s = sqrt(1.0f + m[2][2] - m[0][0] - m[1][1]) * 2;
-				x = (m[0][2] + m[2][0]) / s;
-				y = (m[1][2] + m[2][1]) / s;
-				z = 0.25f * s;
-				w = (m[1][0] - m[0][1]) / s;
-			}
-
-			return *this;
-		}
+	
 		//Create Quaternion from Matrix3
 		Quaternion<T> fromMatrix3(const Mat3<T>& m)
 		{
