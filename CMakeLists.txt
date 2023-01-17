@@ -28,5 +28,6 @@ project(${TARGET_NAMES})
 add_executable(${TARGET_NAMES} ${TARGET_FILES})
 
 target_sources(${TARGET_NAMES} PRIVATE ${TARGET_FILES})
+set(LIBMATHS_LIBRARY ${TARGET_NAMES} PARENT_SCOPE)
 
 target_include_directories(${TARGET_NAMES} PRIVATE ${TARGET_INCLUDE_DIR})
