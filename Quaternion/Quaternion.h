@@ -11,15 +11,7 @@ namespace lm
 		T x, y, z, w;
 
 	public:
-		const double static radiansToDegrees(const double rad)
-		{
-			return rad * (HALF_CIRCLE / M_PI);
-		}
-
-		const double static degreesToRadians(const double deg)
-		{
-			return deg * (M_PI / HALF_CIRCLE);
-		}
+	
 		static const Quaternion<T> identity;
 
 		T& operator[](const int index)
