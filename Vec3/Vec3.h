@@ -1,15 +1,11 @@
 #pragma once
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
+
 #include <iostream>
 #include <string>
 #include <limits>
 #include <algorithm>
 
-#ifndef HALF_CIRCLE
-#define HALF_CIRCLE 180.0f
-#endif
+#include "Utilities.h"
 
 namespace lm
 {

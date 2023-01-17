@@ -2,6 +2,8 @@
 #include "../Vec4/Vec4.h"
 #include <iostream>
 
+#include "Utilities.h"
+
 namespace lm
 {
 	template <typename T> class Mat4
