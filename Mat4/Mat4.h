@@ -205,7 +205,7 @@ namespace lm
 
 		static Mat4<T> xRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["y1"] = std::cosf(rad);
@@ -219,7 +219,7 @@ namespace lm
 
 		static Mat4<T> yRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["x0"] = std::cosf(rad);
@@ -233,7 +233,7 @@ namespace lm
 
 		static Mat4<T> zRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["x0"] = std::cosf(rad);
