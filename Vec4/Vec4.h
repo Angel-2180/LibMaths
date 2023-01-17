@@ -2,10 +2,8 @@
 #include <limits>
 #include <algorithm>
 #include "../Vec3/Vec3.h"
+#include "Utilities.h"
 
-#ifndef HALF_CIRCLE
-	#define HALF_CIRCLE 180.0f
-#endif
 
 namespace lm
 {

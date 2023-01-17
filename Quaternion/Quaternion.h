@@ -2,6 +2,7 @@
 #include "Mat3/Mat3.h"
 #include "Mat4/Mat4.h"
 #include "Vec3/Vec3.h"
+#include "Utilities.h"
 namespace lm
 {
 	template <typename T> class Quaternion
