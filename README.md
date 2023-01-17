@@ -1,4 +1,6 @@
 # LibMaths
 
-use ${LIBMATHS_LIBRARY} for the target_link_libraries,
+Header Only Library
+
+With Cmake:
 use ${LIBMATHS_INCLUDE_DIR} for the target_include_directories
