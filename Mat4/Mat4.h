@@ -247,7 +247,7 @@ namespace lm
 
 		static Mat4<T> perspectiveProjection(float fovy, float aspect, float pnear, float pfar)
 		{
-			float scale = static_cast<float>(tan(fovy * M_PI / 360) * pnear);
+			float scale = static_cast<float>(tan(fovy * PI / 360) * pnear);
 			float r = aspect * scale;
 			float l = -r;
 			float t = scale;

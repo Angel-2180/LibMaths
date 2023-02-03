@@ -127,8 +127,8 @@ namespace lm
 
 		const bool isUnit() const
 		{
-			return std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() ||
-				std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() * std::max(std::abs(this->length()), std::abs(Vec3<T>::unitVal));
+	return std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() ||
+		std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() * std::max(std::abs(this->length()), std::abs(Vec3<T>::unitVal));
 		}
 
 		const T dotProduct(const Vec3<T>& vec3) const
