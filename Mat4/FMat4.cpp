@@ -25,10 +25,10 @@ FMat4::FMat4(float p_init)
 
 FMat4::FMat4(FVec4 p_row1, FVec4 p_row2, FVec4 p_row3, FVec4 p_row4)
 {
-    m_matrix[0] = p_row1;
-    m_matrix[1] = p_row2;
-    m_matrix[2] = p_row3;
-    m_matrix[3] = p_row4;
+	m_matrix[0] = p_row1;
+	m_matrix[1] = p_row2;
+	m_matrix[2] = p_row3;
+	m_matrix[3] = p_row4;
 }
 
 FMat4::FMat4(const FMat4& p_toCopy)
@@ -538,22 +538,22 @@ FMat4 lm::operator*(float p_scalar, const FMat4& p_matrix)
 
 FMat4 lm::operator/(float p_scalar, const FMat4& p_matrix)
 {
-    FMat4 result = p_matrix;
-    result["x0"] /= p_scalar;
-    result["y0"] /= p_scalar;
-    result["z0"] /= p_scalar;
-    result["w0"] /= p_scalar;
-    result["x1"] /= p_scalar;
-    result["y1"] /= p_scalar;
-    result["z1"] /= p_scalar;
-    result["w1"] /= p_scalar;
-    result["x2"] /= p_scalar;
-    result["y2"] /= p_scalar;
-    result["z2"] /= p_scalar;
-    result["w2"] /= p_scalar;
-    result["x3"] /= p_scalar;
-    result["y3"] /= p_scalar;
-    result["z3"] /= p_scalar;
-    result["w3"] /= p_scalar;
-    return result;
+	FMat4 result = p_matrix;
+	result["x0"] /= p_scalar;
+	result["y0"] /= p_scalar;
+	result["z0"] /= p_scalar;
+	result["w0"] /= p_scalar;
+	result["x1"] /= p_scalar;
+	result["y1"] /= p_scalar;
+	result["z1"] /= p_scalar;
+	result["w1"] /= p_scalar;
+	result["x2"] /= p_scalar;
+	result["y2"] /= p_scalar;
+	result["z2"] /= p_scalar;
+	result["w2"] /= p_scalar;
+	result["x3"] /= p_scalar;
+	result["y3"] /= p_scalar;
+	result["z3"] /= p_scalar;
+	result["w3"] /= p_scalar;
+	return result;
 }
