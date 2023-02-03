@@ -330,6 +330,12 @@ namespace lm
 
 			return *this;
 		}
+
+		//isUnit
+		bool isUnit() const
+		{
+			return (x * x + y * y + z * z + w * w) == 1;
+		}
 	};
 	template <typename T> const Quaternion<T> Quaternion<T>::identity = Quaternion<T>(0, 0, 0, 1);
 

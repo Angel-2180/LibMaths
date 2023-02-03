@@ -19,23 +19,31 @@
 #undef near
 #endif
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
 #ifndef HALF_CIRCLE
 #define HALF_CIRCLE 180.0f
 #endif
 
+#undef PI
+
+#define PI (4.f * atan(1.f))
+#define TO_RADIANS(value) value * PI / 180.f
+#define TO_DEGREES(value) value * 180.f / PI
+
 namespace lm
 {
-    inline double radiansToDegrees(const double rad)
-    {
-        return rad * (HALF_CIRCLE / M_PI);
-    }
+	inline double radiansToDegrees(const double rad)
+	{
+		return rad * (HALF_CIRCLE / PI);
+	}
 
-    inline double degreesToRadians(const double deg)
-    {
-        return deg * (M_PI / HALF_CIRCLE);
-    }
+	inline double degreesToRadians(const double deg)
+	{
+		return deg * (PI / HALF_CIRCLE);
+	}
+
+	template<typename T>
+	inline T clamp(const T& value, const T& min, const T& max)
+	{
+		return value < min ? min : (value > max ? max : value);
+	}
 }
