@@ -7,8 +7,6 @@
 #include "../Vec3/FVec3.hpp"
 #include "../Vec4/FVec4.hpp"
 
-
-
 namespace lm
 {
 	struct FQuat
@@ -64,7 +62,7 @@ namespace lm
 		 * @param other Matrix to convert
 		 * @return A new quaternion with the same components as q
 		*/
-		FQuat(const Mat3& other);
+		FQuat(const FMat3& other);
 
 		~FQuat() = default;
 
@@ -124,7 +122,6 @@ namespace lm
 		 * @note If the length of the quaternion is 0, the quaternion (0, 0, 0, 1) is returned
 		*/
 		FQuat normalize() const;
-
 
 		/**
 		 * @brief Get the conjugate of the quaternion
@@ -270,7 +267,7 @@ namespace lm
 		 * @note The matrix is a rotation matrix.
 		 *
 		*/
-		Mat3 toMatrix3() const;
+		FMat3 toMatrix3() const;
 
 		/**
 		 * @brief Create a FQuat from a Matrix3.
@@ -278,7 +275,7 @@ namespace lm
 		 * @return The quaternion.
 		 * @note The matrix must be a rotation matrix.
 		*/
-		FQuat fromMatrix3(const Mat3& m);
+		FQuat fromMatrix3(const FMat3& m);
 	};
 
 	static FVec3 operator*(const FVec3& v, FQuat const& q);

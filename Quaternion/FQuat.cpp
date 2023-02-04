@@ -4,11 +4,11 @@
 
 using namespace lm;
 
-lm::FQuat::FQuat(): x(0), y(0), z(0), w(0) {}
+lm::FQuat::FQuat() : x(0), y(0), z(0), w(0) {}
 
 lm::FQuat::FQuat(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
-lm::FQuat::FQuat(FQuat const &q): x(q.x), y(q.y), z(q.z), w(q.w) {}
+lm::FQuat::FQuat(FQuat const& q) : x(q.x), y(q.y), z(q.z), w(q.w) {}
 
 lm::FQuat::FQuat(FVec3 axis, float angle)
 {
@@ -21,7 +21,7 @@ lm::FQuat::FQuat(FVec3 axis, float angle)
 	w = cos(radAngle / 2);
 }
 
-lm::FQuat::FQuat(const Mat3 &other) { fromMatrix3(other); }
+lm::FQuat::FQuat(const FMat3& other) { fromMatrix3(other); }
 
 const FQuat FQuat::identity = FQuat(0, 0, 0, 1);
 
@@ -88,7 +88,6 @@ FQuat lm::FQuat::normalize() const
 	float len = length();
 	if (len <= 0)
 	{
-
 		return FQuat(0, 0, 0, 1);
 	}
 	float oneOverLen = 1 / len;
@@ -273,9 +272,9 @@ FQuat lm::FQuat::rotate(const FVec3& axis, float angle)
 	return FQuat(axis.x * sinHalfAngle, axis.y * sinHalfAngle, axis.z * sinHalfAngle, cosHalfAngle);
 }
 
-Mat3 lm::FQuat::toMatrix3() const
+FMat3 lm::FQuat::toMatrix3() const
 {
-	Mat3 m;
+	FMat3 m;
 	float xx = x * x;
 	float xy = x * y;
 	float xz = x * z;
@@ -304,7 +303,7 @@ Mat3 lm::FQuat::toMatrix3() const
 	return m;
 }
 
-FQuat lm::FQuat::fromMatrix3(const Mat3& m)
+FQuat lm::FQuat::fromMatrix3(const FMat3& m)
 {
 	float trace = m[0][0] + m[1][1] + m[2][2];
 	float s = 0.0f;
