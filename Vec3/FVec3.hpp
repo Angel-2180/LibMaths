@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace lm
 {
 	struct FVec3
@@ -206,14 +208,6 @@ namespace lm
 		static float AngleBetween(const FVec3& p_from, const FVec3& p_to);
 
 		/**
-		* Return the slerp between two vectors
-		 * @param p_start
-		 * @param p_end
-		 * @param p_alpha
-		*/
-		static FVec3 Slerp(const FVec3& p_start, const FVec3& p_end, float p_alpha);
-
-		/**
 		 * Return the min vector between two vectors
 		 * @param p_target
 		 * @param p_min
@@ -274,6 +268,8 @@ namespace lm
 	 * @param p_vec
 	*/
 	FVec3 operator*(float p_scalar, const FVec3& p_vec);
+
+	FVec3 operator*(const FVec3& p_vec, const FVec3& p_vec2);
 
 	/**
 	 * Return the division of scalar and actual vector

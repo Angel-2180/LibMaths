@@ -3,7 +3,7 @@
 
 #include "FVec4.hpp"
 #include "../Vec3/FVec3.hpp"
-#include "Utilities.h"
+#include "../Utilities.h"
 #include "iostream"
 #include <algorithm>
 #include <limits>
