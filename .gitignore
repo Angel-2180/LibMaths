@@ -27,6 +27,7 @@ build/
 !/Release/*
 
 .vs
+.vscode
 
 ### CMake ###
 CMakeCache.txt
