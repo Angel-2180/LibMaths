@@ -2,11 +2,11 @@
 
 #include <stdexcept>
 
-#include "Mat3/Mat3.h"
-#include "Mat4/Mat4.h"
-#include "Vec3/Vec3.h"
+#include "../Mat3/Mat3.h"
+#include "../Mat4/Mat4.h"
+#include "../Vec3/Vec3.h"
 
-#include "Utilities.h"
+#include "../Utilities.h"
 
 namespace lm
 {
@@ -22,37 +22,13 @@ namespace lm
 		*           Instantiation            *
 		*                                    *
 		\************************************/
-		
-		/**
-		 * @brief Default constructor
-		 * @details Set all components to 0
-		*/
+
 		Quaternion() : x(0), y(0), z(0), w(0) {}
 
-		/**
-		 * @brief Constructor
-		 * @details Set all components to the same value
-		 * @param value Value to set all components to
-		 * @return A new quaternion with all components set to value
-		*/
 		Quaternion(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
 
-		/**
-		 * @brief Constructor copy
-		 * @details Copy all components from another quaternion
-		 * @param q Quaternion to copy from
-		 * @return A new quaternion with the same components as q
-		*/
 		Quaternion(Quaternion<T> const& q) : x(q.x), y(q.y), z(q.z), w(q.w) {}
 
-		/**
-		 * @brief Constructor from axis and angle
-		 * @details Create a quaternion from an axis and an angle
-		 * @param axis Axis to rotate around
-		 * @param angle Angle to rotate
-		 * @return A new quaternion with the same components as q
-		 * @note The angle is in degrees
-		*/
 		Quaternion(Vec3<T> axis, float angle)
 		{
 			float radAngle = TO_RADIANS(angle);
@@ -63,16 +39,9 @@ namespace lm
 			z = axis.Z() * s;
 			w = cos(radAngle / 2);
 		}
-
-		/**
-		 * @brief Constructor from matrix
-		 * @details Create a quaternion from a matrix
-		 * @param other Matrix to convert
-		 * @return A new quaternion with the same components as q
-		*/
 		Quaternion(const Mat3<T>& other) { fromMatrix3(other); }
 
-		~Quaternion() {} = default;
+		~Quaternion() {}
 
 		static const Quaternion<T> identity;
 
@@ -120,18 +89,8 @@ namespace lm
 			}
 		}
 
-		/**
-		 * @brief Get the vector part of the quaternion
-		 * @details Get the vector part of the quaternion
-		 * @return A new vector with the same components as the vector part of the quaternion
-		*/
 		const Vec3<T>& getVec3Part() const { return Vec3<T>(x, y, z); }
 
-		/**
-		 * @brief Get the vector part of the quaternion
-		 * @details Get the vector part of the quaternion
-		 * @return A new vector with the same components as the vector part of the quaternion
-		*/
 		const Vec4<T>& getVec4Part() const { return Vec4<T>(x, y, z, w); }
 
 		/************************************\
@@ -140,37 +99,16 @@ namespace lm
 		*                                    *
 		\************************************/
 
-
-		/**
-		 * @brief Get the Length of the quaternion squared\
-		 * @details Get the Length of the quaternion squared
-		 * @return The length of the quaternion squared
-		 * @note This is faster than length() because it avoids a square root
-		 * @note This is useful for comparing the length of two quaternions
-		*/
 		T length2() const
 		{
 			return (x * x) + (y * y) + (z * z) + (w * w);
 		}
 
-
-		/**
-		 * @brief Get the Length of the quaternion
-		 * @details Get the Length of the quaternion
-		 * @return The length of the quaternion
-		 * @note This is slower than length2() because it involves a square root
-		*/
 		T length() const
 		{
 			return sqrt(length2());
 		}
 
-		/**
-		 * @brief Normalize the quaternion
-		 * @details Normalize the quaternion
-		 * @return A new quaternion with the same direction as the original but with a length of 1
-		 * @note If the length of the quaternion is 0, the quaternion (0, 0, 0, 1) is returned
-		*/
 		Quaternion<T> normalize() const
 		{
 			T len = length();
@@ -180,46 +118,21 @@ namespace lm
 			return Quaternion<T>(x * oneOverLen, y * oneOverLen, z * oneOverLen, w * oneOverLen);
 		}
 
-
-		/**
-		 * @brief Get the conjugate of the quaternion
-		 * @details Get the conjugate of the quaternion
-		 * @return A new quaternion with the same direction as the original but with a length of 1
-		 * @note If the length of the quaternion is 0, the quaternion (0, 0, 0, 1) is returned
-		*/
 		Quaternion<T> conjugate() const
 		{
 			return Quaternion<T>(-x, -y, -z, w);
 		}
 
-		/**
-		 * @brief Get the inverse of the quaternion
-		 * @details Get the inverse of the quaternion
-		 * @return A new quaternion with the same direction as the original but with a length of 1
-		 * @note If the length of the quaternion is 0, the quaternion (0, 0, 0, 1) is returned
-		*/
 		Quaternion<T> inverse() const
 		{
 			return conjugate() / length2();
 		}
 
-		/**
-		 * @brief Get the dot product of two quaternions
-		 * @details Get the dot product of two quaternions
-		 * @param p The other quaternion
-		 * @return The dot product of the two quaternions
-		*/
 		T dot(Quaternion<T> const& p) const
 		{
 			return (x * p.x) + (y * p.y) + (z * p.z) + (w * p.w);
 		}
 
-		/**
-		 * @brief Get the cross product of two quaternions
-		 * @details Get the cross product of two quaternions
-		 * @param p The other quaternion
-		 * @return The cross product of the two quaternions
-		*/
 		const Quaternion<T> cross(Quaternion<T> const& q) const
 		{
 			return Quaternion<T>(
@@ -332,8 +245,8 @@ namespace lm
 		const Vec3<T> operator*(Vec3<T> const& v) const
 		{
 			const Vec3<T> quatVector(x, y, z);
-			const Vec3<T> uv(quatVector.cross(v));
-			const Vec3<T> uuv(quatVector.cross(uv));
+			const Vec3<T> uv(quatVector.crossProduct(v));
+			const Vec3<T> uuv(quatVector.crossProduct(uv));
 
 			return v + ((uv * w) + uuv) * static_cast<T>(2);
 		}
@@ -361,12 +274,6 @@ namespace lm
 			return x != q.x || y != q.y || z != q.z || w != q.w;
 		}
 
-		/**
-		 * @brief Returns true if the quaternion is a unit quaternion.
-		 * @return True if the quaternion is a unit quaternion.
-		 * @note A unit quaternion is a quaternion with a length of 1.
-		 * @note This function is not very accurate.
-		*/
 		bool isUnit() const
 		{
 			return dot(*this) == static_cast<T>(1);
@@ -378,22 +285,11 @@ namespace lm
 		*                                    *
 		\************************************/
 
-		/**
-		 * @brief Returns the angle of the quaternion.
-		 * @return The angle of the quaternion.
-		 * @note The angle is in radians.
-		*/
 		float getAngle() const
 		{
 			return float(2 * acos(w));
 		}
 
-		/**
-		 * @brief Returns the angle from this quaternion to another quaternion.
-		 * @param q The quaternion.
-		 * @return The angle of the quaternion.
-		 * @note The angle is in radians.
-		*/
 		float getAngle(Quaternion<T> const& q) const
 		{
 			return float(2 * acos(dot(q)));
@@ -405,12 +301,6 @@ namespace lm
 		*                                    *
 		\************************************/
 
-		/**
-		 * @brief Rotates a quaternion around a vector.
-		 * @param v The vector to rotate around.
-		 *	@note The vector must be normalized.
-		 *	@returns The rotated quaternion.
-		*/
 		Quaternion<T> rotate(const Vec3<T>& v) const
 		{
 			Quaternion<T> q(v.x, v.y, v.z, 0);
@@ -418,40 +308,21 @@ namespace lm
 			return q;
 		}
 
-		/**
-		 * @brief Rotates a quaternion around a quaternion.
-		 * @param q The quaternion to rotate around.
-		 * @returns The rotated quaternion.
-		 * @note The quaternion must be normalized.
-		*/
 		Quaternion<T> rotate(Quaternion<T> const& q) const
 		{
 			return *this * q * inverse();
 		}
 
-		/**
-		 * @brief Rotates a quaternion around a vector by a given angle.
-		 * @param v The vector to rotate around.
-		 * @param angle The angle to rotate.
-		 * @returns The rotated quaternion.
-		 * @note The vector must be normalized.
-		 * @note The angle is in degrees.
-		*/
 		Quaternion<T> rotate(const Vec3<T>& axis, float angle)
 		{
-			float radAngle = TO_RADIANS(angle);
+			radAngle = TO_RADIANS(angle);
 			float halfAngle = radAngle / 2;
 			T sinHalfAngle = sin(halfAngle);
 			T cosHalfAngle = cos(halfAngle);
 			return Quaternion<T>(axis.X() * sinHalfAngle, axis.Y() * sinHalfAngle, axis.Z() * sinHalfAngle, cosHalfAngle);
 		}
 
-		/**
-		 * @brief Create a Matrix3 from a quaternion.
-		 * @return The matrix.
-		 * @note The matrix is a rotation matrix.
-		 * 
-		*/
+		//Create Matrix3 from Quaternion
 		Mat3<T> toMatrix3() const
 		{
 			Mat3<T> m;
@@ -483,12 +354,7 @@ namespace lm
 			return m;
 		}
 
-		/**
-		 * @brief Create a Quaternion from a Matrix3.
-		 * @param m The matrix.
-		 * @return The quaternion.
-		 * @note The matrix must be a rotation matrix.
-		*/
+		//Create Quaternion from Matrix3
 		Quaternion<T> fromMatrix3(const Mat3<T>& m)
 		{
 			T trace = m[0][0] + m[1][1] + m[2][2];
@@ -537,13 +403,13 @@ namespace lm
 	typedef Quaternion<double>	Quatd;
 
 	template <typename T>
-	inline constexpr static Vec3<T> operator*(const Vec3<T>& v, Quaternion<T> const& q)
+	inline constexpr static lm::Vec3<T> operator*(const lm::Vec3<T>& v, Quaternion<T> const& q)
 	{
 		return q.inverse() * v;
 	}
 
 	template <typename T>
-	inline constexpr static Vec4<T> operator*(const Vec4<T>& v, Quaternion<T> const& q)
+	inline constexpr static lm::Vec4<T> operator*(const lm::Vec4<T>& v, Quaternion<T> const& q)
 	{
 		return q.inverse() * v;
 	}
