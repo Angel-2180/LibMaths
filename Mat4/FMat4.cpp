@@ -303,24 +303,24 @@ FMat4 FMat4::Translation(const FVec3& p_translation)
 FMat4 FMat4::Rotation(const FVec3& p_rotation)
 {
     FMat4 result = FMat4::Identity();
-    result["x0"] = cos(p_rotation.y) * cos(p_rotation.z);
-    result["x1"] = cos(p_rotation.y) * sin(p_rotation.z);
-    result["x2"] = -sin(p_rotation.y);
-    result["y0"] = sin(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) - cos(p_rotation.x) * sin(p_rotation.z);
-    result["y1"] = sin(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) + cos(p_rotation.x) * cos(p_rotation.z);
-    result["y2"] = sin(p_rotation.x) * cos(p_rotation.y);
-    result["z0"] = cos(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) + sin(p_rotation.x) * sin(p_rotation.z);
-    result["z1"] = cos(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) - sin(p_rotation.x) * cos(p_rotation.z);
-    result["z2"] = cos(p_rotation.x) * cos(p_rotation.y);
+    result[0][0] = cos(p_rotation.y) * cos(p_rotation.z);
+    result[1][0] = cos(p_rotation.y) * sin(p_rotation.z);
+    result[2][0] = -sin(p_rotation.y);
+    result[0][1] = sin(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) - cos(p_rotation.x) * sin(p_rotation.z);
+    result[1][1] = sin(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) + cos(p_rotation.x) * cos(p_rotation.z);
+    result[2][1] = sin(p_rotation.x) * cos(p_rotation.y);
+    result[0][2] = cos(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) + sin(p_rotation.x) * sin(p_rotation.z);
+    result[1][2] = cos(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) - sin(p_rotation.x) * cos(p_rotation.z);
+    result[2][2] = cos(p_rotation.x) * cos(p_rotation.y);
     return result;
 }
 
 FMat4 FMat4::Scale(const FVec3& p_scale)
 {
     FMat4 result = FMat4::Identity();
-    result["x0"] = p_scale.x;
-    result["y1"] = p_scale.y;
-    result["z2"] = p_scale.z;
+    result[0][0] = p_scale.x;
+    result[1][1] = p_scale.y;
+    result[2][2] = p_scale.z;
     return result;
 }
 
@@ -382,12 +382,12 @@ FMat4 FMat4::Orthographic(float p_left, float p_right, float p_bottom, float p_t
     float y3 = -(p_top + p_bottom) / (p_top - p_bottom);
     float z4 = -(p_far + p_near) / (p_far - p_near);
 
-    result["x0"] = x1;
-    result["y1"] = y2;
-    result["z2"] = z3;
-    result["x3"] = x3;
-    result["y3"] = y3;
-    result["z3"] = z4;
+    result[0][0] = x1;
+    result[1][1] = y2;
+    result[2][2] = z3;
+    result[3][0] = x3;
+    result[3][1] = y3;
+    result[3][2] = z4;
 
     return result;
 }
@@ -424,12 +424,42 @@ FMat4 FMat4::Rotate(const FMat4& p_matrix, const FVec3& p_rotation)
     return result;
 }
 
+FMat4 FMat4::Rotate(const FMat4& p_matrix, float p_angle, const FVec3& p_axis)
+{
+    float const a = p_angle;
+    float const c = cos(a);
+    float const s = sin(a);
+
+    FVec3 axis(FVec3::Normalize(p_axis));
+    FVec3 temp((float(1) - c) * axis);
+
+    FMat4 Rotate;
+    Rotate[0][0] = c + temp[0] * axis[0];
+    Rotate[0][1] = temp[0] * axis[1] + s * axis[2];
+    Rotate[0][2] = temp[0] * axis[2] - s * axis[1];
+
+    Rotate[1][0] = temp[1] * axis[0] - s * axis[2];
+    Rotate[1][1] = c + temp[1] * axis[1];
+    Rotate[1][2] = temp[1] * axis[2] + s * axis[0];
+
+    Rotate[2][0] = temp[2] * axis[0] + s * axis[1];
+    Rotate[2][1] = temp[2] * axis[1] - s * axis[0];
+    Rotate[2][2] = c + temp[2] * axis[2];
+
+    FMat4 Result;
+    Result[0] = p_matrix[0] * Rotate[0][0] + p_matrix[1] * Rotate[0][1] + p_matrix[2] * Rotate[0][2];
+    Result[1] = p_matrix[0] * Rotate[1][0] + p_matrix[1] * Rotate[1][1] + p_matrix[2] * Rotate[1][2];
+    Result[2] = p_matrix[0] * Rotate[2][0] + p_matrix[1] * Rotate[2][1] + p_matrix[2] * Rotate[2][2];
+    Result[3] = p_matrix[3];
+    return Result;
+}
+
 FMat4 FMat4::Scale(const FMat4& p_matrix, const FVec3& p_scale)
 {
     FMat4 result = p_matrix;
-    result["x0"] *= p_scale.x;
-    result["y1"] *= p_scale.y;
-    result["z2"] *= p_scale.z;
+    result[0][0] *= p_scale.x;
+    result[1][1] *= p_scale.y;
+    result[2][2] *= p_scale.z;
     return result;
 }
 
@@ -464,10 +494,10 @@ FMat4 FMat4::XRotation(float p_angle)
     FMat4 result = FMat4::Identity();
     float cos = cosf(radAngle);
     float sin = sinf(radAngle);
-    result["y1"] = cos;
-    result["z1"] = -sin;
-    result["y2"] = sin;
-    result["z2"] = cos;
+    result[1][1] = cos;
+    result[1][2] = -sin;
+    result[2][1] = sin;
+    result[2][2] = cos;
     return result;
 }
 
@@ -484,10 +514,10 @@ FMat4 FMat4::YRotation(float p_angle)
     FMat4 result = FMat4::Identity();
     float cos = cosf(radAngle);
     float sin = sinf(radAngle);
-    result["x0"] = cos;
-    result["z0"] = sin;
-    result["x2"] = -sin;
-    result["z2"] = cos;
+    result[0][0] = cos;
+    result[0][2] = sin;
+    result[2][0] = -sin;
+    result[2][2] = cos;
     return result;
 }
 
@@ -504,10 +534,10 @@ FMat4 FMat4::ZRotation(float p_angle)
     FMat4 result = FMat4::Identity();
     float cos = cosf(radAngle);
     float sin = sinf(radAngle);
-    result["x0"] = cos;
-    result["y0"] = -sin;
-    result["x1"] = sin;
-    result["y1"] = cos;
+    result[0][0] = cos;
+    result[0][1] = -sin;
+    result[1][0] = sin;
+    result[1][1] = cos;
     return result;
 }
 
@@ -535,22 +565,22 @@ FMat4 FMat4::XYZRotation(const FMat4& p_matrix, const FVec3& p_rotation)
 float* FMat4::ToArray(const FMat4& p_matrix)
 {
     float* result = new float[16];
-    result[0] = p_matrix["x0"];
-    result[1] = p_matrix["y0"];
-    result[2] = p_matrix["z0"];
-    result[3] = p_matrix["w0"];
-    result[4] = p_matrix["x1"];
-    result[5] = p_matrix["y1"];
-    result[6] = p_matrix["z1"];
-    result[7] = p_matrix["w1"];
-    result[8] = p_matrix["x2"];
-    result[9] = p_matrix["y2"];
-    result[10] = p_matrix["z2"];
-    result[11] = p_matrix["w2"];
-    result[12] = p_matrix["x3"];
-    result[13] = p_matrix["y3"];
-    result[14] = p_matrix["z3"];
-    result[15] = p_matrix["w3"];
+    result[0] = p_matrix[0][0];
+    result[1] = p_matrix[0][1];
+    result[2] = p_matrix[0][2];
+    result[3] = p_matrix[0][3];
+    result[4] = p_matrix[1][0];
+    result[5] = p_matrix[1][1];
+    result[6] = p_matrix[1][2];
+    result[7] = p_matrix[1][3];
+    result[8] = p_matrix[2][0];
+    result[9] = p_matrix[2][1];
+    result[10] = p_matrix[2][2];
+    result[11] = p_matrix[2][3];
+    result[12] = p_matrix[3][0];
+    result[13] = p_matrix[3][1];
+    result[14] = p_matrix[3][2];
+    result[15] = p_matrix[3][3];
     return result;
 }
 
@@ -630,74 +660,74 @@ FMat4 lm::FMat4::Inverse(const FMat4& p_matrix)
 
 std::ostream& lm::operator<<(std::ostream& p_stream, const FMat4& p_matrix)
 {
-    p_stream << p_matrix["x0"] << " " << p_matrix["y0"] << " " << p_matrix["z0"] << " " << p_matrix["w0"] << std::endl;
-    p_stream << p_matrix["x1"] << " " << p_matrix["y1"] << " " << p_matrix["z1"] << " " << p_matrix["w1"] << std::endl;
-    p_stream << p_matrix["x2"] << " " << p_matrix["y2"] << " " << p_matrix["z2"] << " " << p_matrix["w2"] << std::endl;
-    p_stream << p_matrix["x3"] << " " << p_matrix["y3"] << " " << p_matrix["z3"] << " " << p_matrix["w3"] << std::endl;
+    p_stream << p_matrix[0][0] << " " << p_matrix[0][1] << " " << p_matrix[0][2] << " " << p_matrix[0][3] << std::endl;
+    p_stream << p_matrix[1][0] << " " << p_matrix[1][1] << " " << p_matrix[1][2] << " " << p_matrix[1][3] << std::endl;
+    p_stream << p_matrix[2][0] << " " << p_matrix[2][1] << " " << p_matrix[2][2] << " " << p_matrix[2][3] << std::endl;
+    p_stream << p_matrix[3][0] << " " << p_matrix[3][1] << " " << p_matrix[3][2] << " " << p_matrix[3][3] << std::endl;
     return p_stream;
 }
 
 std::istream& lm::operator>>(std::istream& p_stream, FMat4& p_matrix)
 {
-    p_stream >> p_matrix["x0"];
-    p_stream >> p_matrix["y0"];
-    p_stream >> p_matrix["z0"];
-    p_stream >> p_matrix["w0"];
-    p_stream >> p_matrix["x1"];
-    p_stream >> p_matrix["y1"];
-    p_stream >> p_matrix["z1"];
-    p_stream >> p_matrix["w1"];
-    p_stream >> p_matrix["x2"];
-    p_stream >> p_matrix["y2"];
-    p_stream >> p_matrix["z2"];
-    p_stream >> p_matrix["w2"];
-    p_stream >> p_matrix["x3"];
-    p_stream >> p_matrix["y3"];
-    p_stream >> p_matrix["z3"];
-    p_stream >> p_matrix["w3"];
+    p_stream >> p_matrix[0][0];
+    p_stream >> p_matrix[0][1];
+    p_stream >> p_matrix[0][2];
+    p_stream >> p_matrix[0][3];
+    p_stream >> p_matrix[1][0];
+    p_stream >> p_matrix[1][1];
+    p_stream >> p_matrix[1][2];
+    p_stream >> p_matrix[1][3];
+    p_stream >> p_matrix[2][0];
+    p_stream >> p_matrix[2][1];
+    p_stream >> p_matrix[2][2];
+    p_stream >> p_matrix[2][3];
+    p_stream >> p_matrix[3][0];
+    p_stream >> p_matrix[3][1];
+    p_stream >> p_matrix[3][2];
+    p_stream >> p_matrix[3][3];
     return p_stream;
 }
 
 FMat4 lm::operator*(float p_scalar, const FMat4& p_matrix)
 {
     FMat4 result = p_matrix;
-    result["x0"] *= p_scalar;
-    result["y0"] *= p_scalar;
-    result["z0"] *= p_scalar;
-    result["w0"] *= p_scalar;
-    result["x1"] *= p_scalar;
-    result["y1"] *= p_scalar;
-    result["z1"] *= p_scalar;
-    result["w1"] *= p_scalar;
-    result["x2"] *= p_scalar;
-    result["y2"] *= p_scalar;
-    result["z2"] *= p_scalar;
-    result["w2"] *= p_scalar;
-    result["x3"] *= p_scalar;
-    result["y3"] *= p_scalar;
-    result["z3"] *= p_scalar;
-    result["w3"] *= p_scalar;
+    result[0][0] *= p_scalar;
+    result[0][1] *= p_scalar;
+    result[0][2] *= p_scalar;
+    result[0][3] *= p_scalar;
+    result[1][0] *= p_scalar;
+    result[1][1] *= p_scalar;
+    result[1][2] *= p_scalar;
+    result[1][3] *= p_scalar;
+    result[2][0] *= p_scalar;
+    result[2][1] *= p_scalar;
+    result[2][2] *= p_scalar;
+    result[2][3] *= p_scalar;
+    result[3][0] *= p_scalar;
+    result[3][1] *= p_scalar;
+    result[3][2] *= p_scalar;
+    result[3][3] *= p_scalar;
     return result;
 }
 
 FMat4 lm::operator/(float p_scalar, const FMat4& p_matrix)
 {
     FMat4 result = p_matrix;
-    result["x0"] /= p_scalar;
-    result["y0"] /= p_scalar;
-    result["z0"] /= p_scalar;
-    result["w0"] /= p_scalar;
-    result["x1"] /= p_scalar;
-    result["y1"] /= p_scalar;
-    result["z1"] /= p_scalar;
-    result["w1"] /= p_scalar;
-    result["x2"] /= p_scalar;
-    result["y2"] /= p_scalar;
-    result["z2"] /= p_scalar;
-    result["w2"] /= p_scalar;
-    result["x3"] /= p_scalar;
-    result["y3"] /= p_scalar;
-    result["z3"] /= p_scalar;
-    result["w3"] /= p_scalar;
+    result[0][0] /= p_scalar;
+    result[0][1] /= p_scalar;
+    result[0][2] /= p_scalar;
+    result[0][3] /= p_scalar;
+    result[1][0] /= p_scalar;
+    result[1][1] /= p_scalar;
+    result[1][2] /= p_scalar;
+    result[1][3] /= p_scalar;
+    result[2][0] /= p_scalar;
+    result[2][1] /= p_scalar;
+    result[2][2] /= p_scalar;
+    result[2][3] /= p_scalar;
+    result[3][0] /= p_scalar;
+    result[3][1] /= p_scalar;
+    result[3][2] /= p_scalar;
+    result[3][3] /= p_scalar;
     return result;
 }
