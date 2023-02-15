@@ -24,6 +24,32 @@ FMat4::FMat4(float p_init)
     }
 }
 
+FMat4::FMat4(float p_00, float p_01, float p_02, float p_03,
+    float p_10, float p_11, float p_12, float p_13,
+    float p_20, float p_21, float p_22, float p_23,
+    float p_30, float p_31, float p_32, float p_33)
+{
+    m_matrix[0][0] = p_00;
+    m_matrix[0][1] = p_01;
+    m_matrix[0][2] = p_02;
+    m_matrix[0][3] = p_03;
+
+    m_matrix[1][0] = p_10;
+    m_matrix[1][1] = p_11;
+    m_matrix[1][2] = p_12;
+    m_matrix[1][3] = p_13;
+
+    m_matrix[2][0] = p_20;
+    m_matrix[2][1] = p_21;
+    m_matrix[2][2] = p_22;
+    m_matrix[2][3] = p_23;
+
+    m_matrix[3][0] = p_30;
+    m_matrix[3][1] = p_31;
+    m_matrix[3][2] = p_32;
+    m_matrix[3][3] = p_33;
+}
+
 FMat4::FMat4(FVec4 p_row1, FVec4 p_row2, FVec4 p_row3, FVec4 p_row4)
 {
     m_matrix[0] = p_row1;
@@ -268,9 +294,9 @@ FMat4 FMat4::Identity()
 FMat4 FMat4::Translation(const FVec3& p_translation)
 {
     FMat4 result = FMat4::Identity();
-    result["w0"] = p_translation.x;
-    result["w1"] = p_translation.y;
-    result["w2"] = p_translation.z;
+    result[3][0] = p_translation.x;
+    result[3][1] = p_translation.y;
+    result[3][2] = p_translation.z;
     return result;
 }
 
@@ -300,57 +326,48 @@ FMat4 FMat4::Scale(const FVec3& p_scale)
 
 FMat4 FMat4::LookAt(const FVec3& p_eye, const FVec3& p_target, const FVec3& p_up)
 {
-    const FVec3 forward(p_target - p_eye);
-    FVec3::Normalize(forward);
+    FVec3 const f(FVec3::Normalize(p_target - p_eye));
+    FVec3 const s(FVec3::Normalize(FVec3::Cross(f, p_up)));
+    FVec3 const u(FVec3::Cross(s, f));
 
-    const FVec3 right(FVec3::Cross(forward, p_up));
-    FVec3::Normalize(right);
-
-    const FVec3 up(FVec3::Cross(right, forward));
-
-    FMat4 result = FMat4::Identity();
-
-    result[0][0] = right.x;
-    result[1][0] = right.y;
-    result[2][0] = right.z;
-
-    result[0][1] = up.x;
-    result[1][1] = up.y;
-    result[2][1] = up.z;
-
-    result[0][2] = -forward.x;
-    result[1][2] = -forward.y;
-    result[2][2] = -forward.z;
-
-    result[3][0] = -FVec3::Dot(right, p_eye);
-    result[3][1] = -FVec3::Dot(up, p_eye);
-    result[3][2] = FVec3::Dot(forward, p_eye);
-
-    return result;
+    FMat4 Result(1);
+    Result[0][0] = s.x;
+    Result[1][0] = s.y;
+    Result[2][0] = s.z;
+    Result[0][1] = u.x;
+    Result[1][1] = u.y;
+    Result[2][1] = u.z;
+    Result[0][2] = -f.x;
+    Result[1][2] = -f.y;
+    Result[2][2] = -f.z;
+    Result[3][0] = -FVec3::Dot(s, p_eye);
+    Result[3][1] = -FVec3::Dot(u, p_eye);
+    Result[3][2] = FVec3::Dot(f, p_eye);
+    return Result;
 }
 
 FMat4 FMat4::Perspective(float p_fov, float p_aspect, float p_near, float p_far)
 {
-    FMat4 result = FMat4::Identity();
+    FMat4 result{};
     float scale = tan(p_fov * PI / 360) * p_near;
     float r = p_aspect * scale;
     float l = -r;
     float t = scale;
     float b = -t;
-    float x1 = 2 * p_near / (r - l);
-    float y2 = 2 * p_near / (t - b);
+    float x1 = 2.0f * p_near / (r - l);
+    float y2 = 2.0f * p_near / (t - b);
     float x3 = (r + l) / (r - l);
     float y3 = (t + b) / (t - b);
     float z3 = -(p_far + p_near) / (p_far - p_near);
-    float z4 = -(2 * p_far * p_near) / (p_far - p_near);
+    float z4 = -(2.0f * p_far * p_near) / (p_far - p_near);
 
-    result["x0"] = x1;
-    result["y1"] = y2;
-    result["x2"] = x3;
-    result["y2"] = y3;
-    result["z2"] = z3;
-    result["z3"] = z4;
-    result["w2"] = -1;
+    result[0][0] = x1;
+    result[1][1] = y2;
+    result[2][0] = x3;
+    result[2][1] = y3;
+    result[2][2] = z3;
+    result[2][3] = -1;
+    result[3][2] = z4;
 
     return result;
 }
@@ -391,9 +408,10 @@ FMat4 FMat4::Transpose(const FMat4& p_matrix)
 FMat4 FMat4::Translate(const FMat4& p_matrix, const FVec3& p_translation)
 {
     FMat4 result = p_matrix;
-    result["w0"] += p_translation.x;
-    result["w1"] += p_translation.y;
-    result["w2"] += p_translation.z;
+    result[3][0] += p_translation.x;
+    result[3][1] += p_translation.y;
+    result[3][2] += p_translation.z;
+
     return result;
 }
 
@@ -539,171 +557,75 @@ float* FMat4::ToArray(const FMat4& p_matrix)
 FMat4 lm::FMat4::ToMat4(const FMat3& p_matrix)
 {
     FMat4 result = FMat4::Identity();
-    result["x0"] = p_matrix[0][0];
-    result["y0"] = p_matrix[0][1];
-    result["z0"] = p_matrix[0][2];
-    result["x1"] = p_matrix[1][0];
-    result["y1"] = p_matrix[1][1];
-    result["z1"] = p_matrix[1][2];
-    result["x2"] = p_matrix[2][0];
-    result["y2"] = p_matrix[2][1];
-    result["z2"] = p_matrix[2][2];
+    result[0][0] = p_matrix[0][0];
+    result[0][1] = p_matrix[0][1];
+    result[0][2] = p_matrix[0][2];
+    result[1][0] = p_matrix[1][0];
+    result[1][1] = p_matrix[1][1];
+    result[1][2] = p_matrix[1][2];
+    result[2][0] = p_matrix[2][0];
+    result[2][1] = p_matrix[2][1];
+    result[2][2] = p_matrix[2][2];
 
     return result;
 }
 
 FMat4 lm::FMat4::Inverse(const FMat4& p_matrix)
 {
-    const float m[16] = {
-        p_matrix[0][0], p_matrix[0][1], p_matrix[0][2], p_matrix[0][3],
-        p_matrix[1][0], p_matrix[1][1], p_matrix[1][2], p_matrix[1][3],
-        p_matrix[2][0], p_matrix[2][1], p_matrix[2][2], p_matrix[2][3],
-        p_matrix[3][0], p_matrix[3][1], p_matrix[3][2], p_matrix[3][3]
-    };
+    float Coef00 = p_matrix[2][2] * p_matrix[3][3] - p_matrix[3][2] * p_matrix[2][3];
+    float Coef02 = p_matrix[1][2] * p_matrix[3][3] - p_matrix[3][2] * p_matrix[1][3];
+    float Coef03 = p_matrix[1][2] * p_matrix[2][3] - p_matrix[2][2] * p_matrix[1][3];
 
-    float inv[16];
+    float Coef04 = p_matrix[2][1] * p_matrix[3][3] - p_matrix[3][1] * p_matrix[2][3];
+    float Coef06 = p_matrix[1][1] * p_matrix[3][3] - p_matrix[3][1] * p_matrix[1][3];
+    float Coef07 = p_matrix[1][1] * p_matrix[2][3] - p_matrix[2][1] * p_matrix[1][3];
 
-    inv[0] = m[5] * m[10] * m[15] -
-        m[5] * m[11] * m[14] -
-        m[9] * m[6] * m[15] +
-        m[9] * m[7] * m[14] +
-        m[13] * m[6] * m[11] -
-        m[13] * m[7] * m[10];
+    float Coef08 = p_matrix[2][1] * p_matrix[3][2] - p_matrix[3][1] * p_matrix[2][2];
+    float Coef10 = p_matrix[1][1] * p_matrix[3][2] - p_matrix[3][1] * p_matrix[1][2];
+    float Coef11 = p_matrix[1][1] * p_matrix[2][2] - p_matrix[2][1] * p_matrix[1][2];
 
-    inv[4] = -m[4] * m[10] * m[15] +
-        m[4] * m[11] * m[14] +
-        m[8] * m[6] * m[15] -
-        m[8] * m[7] * m[14] -
-        m[12] * m[6] * m[11] +
-        m[12] * m[7] * m[10];
+    float Coef12 = p_matrix[2][0] * p_matrix[3][3] - p_matrix[3][0] * p_matrix[2][3];
+    float Coef14 = p_matrix[1][0] * p_matrix[3][3] - p_matrix[3][0] * p_matrix[1][3];
+    float Coef15 = p_matrix[1][0] * p_matrix[2][3] - p_matrix[2][0] * p_matrix[1][3];
 
-    inv[8] = m[4] * m[9] * m[15] -
-        m[4] * m[11] * m[13] -
-        m[8] * m[5] * m[15] +
-        m[8] * m[7] * m[13] +
-        m[12] * m[5] * m[11] -
-        m[12] * m[7] * m[9];
+    float Coef16 = p_matrix[2][0] * p_matrix[3][2] - p_matrix[3][0] * p_matrix[2][2];
+    float Coef18 = p_matrix[1][0] * p_matrix[3][2] - p_matrix[3][0] * p_matrix[1][2];
+    float Coef19 = p_matrix[1][0] * p_matrix[2][2] - p_matrix[2][0] * p_matrix[1][2];
 
-    inv[12] = -m[4] * m[9] * m[14] +
-        m[4] * m[10] * m[13] +
-        m[8] * m[5] * m[14] -
-        m[8] * m[6] * m[13] -
-        m[12] * m[5] * m[10] +
-        m[12] * m[6] * m[9];
+    float Coef20 = p_matrix[2][0] * p_matrix[3][1] - p_matrix[3][0] * p_matrix[2][1];
+    float Coef22 = p_matrix[1][0] * p_matrix[3][1] - p_matrix[3][0] * p_matrix[1][1];
+    float Coef23 = p_matrix[1][0] * p_matrix[2][1] - p_matrix[2][0] * p_matrix[1][1];
 
-    inv[1] = -m[1] * m[10] * m[15] +
-        m[1] * m[11] * m[14] +
-        m[9] * m[2] * m[15] -
-        m[9] * m[3] * m[14] -
-        m[13] * m[2] * m[11] +
-        m[13] * m[3] * m[10];
+    FVec4 Fac0(Coef00, Coef00, Coef02, Coef03);
+    FVec4 Fac1(Coef04, Coef04, Coef06, Coef07);
+    FVec4 Fac2(Coef08, Coef08, Coef10, Coef11);
+    FVec4 Fac3(Coef12, Coef12, Coef14, Coef15);
+    FVec4 Fac4(Coef16, Coef16, Coef18, Coef19);
+    FVec4 Fac5(Coef20, Coef20, Coef22, Coef23);
 
-    inv[5] = m[0] * m[10] * m[15] -
-        m[0] * m[11] * m[14] -
-        m[8] * m[2] * m[15] +
-        m[8] * m[3] * m[14] +
-        m[12] * m[2] * m[11] -
-        m[12] * m[3] * m[10];
+    FVec4 Vec0(p_matrix[1][0], p_matrix[0][0], p_matrix[0][0], p_matrix[0][0]);
+    FVec4 Vec1(p_matrix[1][1], p_matrix[0][1], p_matrix[0][1], p_matrix[0][1]);
+    FVec4 Vec2(p_matrix[1][2], p_matrix[0][2], p_matrix[0][2], p_matrix[0][2]);
+    FVec4 Vec3(p_matrix[1][3], p_matrix[0][3], p_matrix[0][3], p_matrix[0][3]);
 
-    inv[9] = -m[0] * m[9] * m[15] +
-        m[0] * m[11] * m[13] +
-        m[8] * m[1] * m[15] -
-        m[8] * m[3] * m[13] -
-        m[12] * m[1] * m[11] +
-        m[12] * m[3] * m[9];
+    FVec4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+    FVec4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+    FVec4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+    FVec4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
 
-    inv[13] = m[0] * m[9] * m[14] -
-        m[0] * m[10] * m[13] -
-        m[8] * m[1] * m[14] +
-        m[8] * m[2] * m[13] +
-        m[12] * m[1] * m[10] -
-        m[12] * m[2] * m[9];
+    FVec4 SignA(+1, -1, +1, -1);
+    FVec4 SignB(-1, +1, -1, +1);
 
-    inv[2] = m[1] * m[6] * m[15] -
-        m[1] * m[7] * m[14] -
-        m[5] * m[2] * m[15] +
-        m[5] * m[3] * m[14] +
-        m[13] * m[2] * m[7] -
-        m[13] * m[3] * m[6];
+    FMat4 Inverse(Inv0 * SignA, Inv1 * SignB, Inv2 * SignA, Inv3 * SignB);
 
-    inv[6] = -m[0] * m[6] * m[15] +
-        m[0] * m[7] * m[14] +
-        m[4] * m[2] * m[15] -
-        m[4] * m[3] * m[14] -
-        m[12] * m[2] * m[7] +
-        m[12] * m[3] * m[6];
+    FVec4 Row0(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
 
-    inv[10] = m[0] * m[5] * m[15] -
-        m[0] * m[7] * m[13] -
-        m[4] * m[1] * m[15] +
-        m[4] * m[3] * m[13] +
-        m[12] * m[1] * m[7] -
-        m[12] * m[3] * m[5];
+    FVec4 Dot0(p_matrix[0] * Row0);
+    float Dot1 = (Dot0.x + Dot0.y) + (Dot0.z + Dot0.w);
 
-    inv[14] = -m[0] * m[5] * m[14] +
-        m[0] * m[6] * m[13] +
-        m[4] * m[1] * m[14] -
-        m[4] * m[2] * m[13] -
-        m[12] * m[1] * m[6] +
-        m[12] * m[2] * m[5];
+    float OneOverDeterminant = 1.0f / Dot1;
 
-    inv[3] = -m[1] * m[6] * m[11] +
-        m[1] * m[7] * m[10] +
-        m[5] * m[2] * m[11] -
-        m[5] * m[3] * m[10] -
-        m[9] * m[2] * m[7] +
-        m[9] * m[3] * m[6];
-
-    inv[7] = m[0] * m[6] * m[11] -
-        m[0] * m[7] * m[10] -
-        m[4] * m[2] * m[11] +
-        m[4] * m[3] * m[10] +
-        m[8] * m[2] * m[7] -
-        m[8] * m[3] * m[6];
-
-    inv[11] = -m[0] * m[5] * m[11] +
-        m[0] * m[7] * m[9] +
-        m[4] * m[1] * m[11] -
-        m[4] * m[3] * m[9] -
-        m[8] * m[1] * m[7] +
-        m[8] * m[3] * m[5];
-
-    inv[15] = m[0] * m[5] * m[10] -
-        m[0] * m[6] * m[9] -
-        m[4] * m[1] * m[10] +
-        m[4] * m[2] * m[9] +
-        m[8] * m[1] * m[6] -
-        m[8] * m[2] * m[5];
-
-    float det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
-
-    if (det == 0)
-        return FMat4();
-
-    det = 1.0f / det;
-
-    FMat4 inverted;
-    inverted[0][0] = inv[0] * det;
-    inverted[0][1] = inv[1] * det;
-    inverted[0][2] = inv[2] * det;
-    inverted[0][3] = inv[3] * det;
-
-    inverted[1][0] = inv[4] * det;
-    inverted[1][1] = inv[5] * det;
-    inverted[1][2] = inv[6] * det;
-    inverted[1][3] = inv[7] * det;
-
-    inverted[2][0] = inv[8] * det;
-    inverted[2][1] = inv[9] * det;
-    inverted[2][2] = inv[10] * det;
-    inverted[2][3] = inv[11] * det;
-
-    inverted[3][0] = inv[12] * det;
-    inverted[3][1] = inv[13] * det;
-    inverted[3][2] = inv[14] * det;
-    inverted[3][3] = inv[15] * det;
-
-    return inverted;
+    return Inverse * OneOverDeterminant;
 }
 
 std::ostream& lm::operator<<(std::ostream& p_stream, const FMat4& p_matrix)

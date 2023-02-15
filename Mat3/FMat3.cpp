@@ -6,20 +6,9 @@ const FMat3 FMat3::identity = FMat3(1.0f);
 
 FMat3::FMat3(const float p_init)
 {
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            if (i == j)
-            {
-                m_matrix[i][j] = p_init;
-            }
-            else
-            {
-                m_matrix[i][j] = 0;
-            }
-        }
-    }
+    m_matrix[0][0] = p_init;
+    m_matrix[1][1] = p_init;
+    m_matrix[2][2] = p_init;
 }
 
 FMat3::FMat3(const FVec3& p_vec1, const FVec3& p_vec2, const FVec3& p_vec3)
