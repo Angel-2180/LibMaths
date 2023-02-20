@@ -16,6 +16,8 @@ namespace lm
 
 		FMat3() = default;
 		FMat3(const float init);
+		FMat3(float p_00, float p_01, float p_02, float p_10, float p_11,
+			float p_12, float p_20, float p_21, float p_22);
 		FMat3(const FVec3& v1, const FVec3& v2, const FVec3& v3);
 		FMat3(const FVec3& p_position, const FQuat& p_rotation);
 		FMat3(const FMat3& mat3);
@@ -136,6 +138,8 @@ namespace lm
 		 * @note The Angle must be in Degrees.
 		*/
 		static FMat3 Rotation(const float p_angle);
+
+		static FMat3 Rotate(const FMat3& p_mat3, const float p_angle, const FVec3& p_axis);
 
 		/**
 		 * @brief Returns the scale matrix of the given scale
