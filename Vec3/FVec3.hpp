@@ -28,6 +28,7 @@ namespace lm
 
         FVec3(float p_init);
 
+        FVec3(const struct FVec4& p_toCopy);
         /**
         * Copy constructor
         * @param p_toCopy

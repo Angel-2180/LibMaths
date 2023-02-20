@@ -1,5 +1,6 @@
 #include "FMat3.hpp"
 #include "../Quaternion/FQuat.hpp"
+#include "../Mat4/FMat4.hpp"
 using namespace lm;
 
 const FMat3 FMat3::identity = FMat3(1.0f);
@@ -33,6 +34,13 @@ FMat3::FMat3(const FVec3& p_vec1, const FVec3& p_vec2, const FVec3& p_vec3)
 	m_matrix[0] = p_vec1;
 	m_matrix[1] = p_vec2;
 	m_matrix[2] = p_vec3;
+}
+
+FMat3::FMat3(const FMat4& p_mat4)
+{
+	m_matrix[0] = p_mat4[0];
+	m_matrix[1] = p_mat4[1];
+	m_matrix[2] = p_mat4[2];
 }
 
 FMat3::FMat3(const FVec3& p_position, const FQuat& p_rotation)

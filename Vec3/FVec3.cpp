@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "../Utilities.h"
+#include "Vec4/FVec4.hpp"
 #include <algorithm>
 #include <limits>
 
@@ -25,6 +26,10 @@ FVec3::FVec3(float p_x, float p_y, float p_z)
     this->x = p_x;
     this->y = p_y;
     this->z = p_z;
+}
+
+FVec3::FVec3(const struct FVec4& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z)
+{
 }
 
 FVec3::FVec3(const FVec3& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z)

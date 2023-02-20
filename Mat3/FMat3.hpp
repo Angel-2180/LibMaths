@@ -8,6 +8,7 @@
 namespace lm
 {
 	struct FQuat;
+	struct FMat4;
 	struct FMat3
 	{
 		FVec3 m_matrix[3];
@@ -22,6 +23,7 @@ namespace lm
 		FMat3(const FVec3& p_position, const FQuat& p_rotation);
 		FMat3(const FMat3& mat3);
 		FMat3(FMat3&& mat3) noexcept = default;
+		FMat3(const FMat4& mat4);
 
 		~FMat3() = default;
 
