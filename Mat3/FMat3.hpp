@@ -24,6 +24,7 @@ namespace lm
 		FMat3(const FMat3& mat3);
 		FMat3(FMat3&& mat3) noexcept = default;
 		FMat3(const FMat4& mat4);
+		FMat3(FMat4&& mat4) noexcept;
 
 		~FMat3() = default;
 

@@ -43,6 +43,13 @@ FMat3::FMat3(const FMat4& p_mat4)
 	m_matrix[2] = p_mat4[2];
 }
 
+FMat3::FMat3(FMat4&& mat4) noexcept 
+{
+	m_matrix[0] = mat4[0];
+	m_matrix[1] = mat4[1];
+	m_matrix[2] = mat4[2];
+}
+
 FMat3::FMat3(const FVec3& p_position, const FQuat& p_rotation)
 {
 	FMat3 result = FQuat::ToMatrix3(p_rotation);
