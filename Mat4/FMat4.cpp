@@ -91,19 +91,23 @@ FMat4& FMat4::operator=(const FMat4& p_other)
 
 FMat4 FMat4::operator*(const FMat4& p_other) const
 {
-    FMat4 result;
-    for (int i = 0; i < 4; i++)
+   
+    FMat4 newMat4;
+
+    for (unsigned int i = 0; i < 4; i++)
     {
-        for (int j = 0; j < 4; j++)
+        FVec4 vec4;
+        for (unsigned int j = 0; j < 4; j++)
         {
-            result.m_matrix[i][j] = 0.0f;
-            for (int k = 0; k < 4; k++)
-            {
-                result.m_matrix[i][j] += m_matrix[i][k] * p_other.m_matrix[k][j];
-            }
+            vec4[j] = this->m_matrix[0][j] * p_other.m_matrix[i].x
+                + this->m_matrix[1][j] * p_other.m_matrix[i].y
+                + this->m_matrix[2][j] * p_other.m_matrix[i].z
+                + this->m_matrix[3][j] * p_other.m_matrix[i].w;
         }
+        newMat4.m_matrix[i] = vec4;
     }
-    return result;
+
+    return newMat4;
 }
 
 FMat4& FMat4::operator*=(const FMat4& p_other)
