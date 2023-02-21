@@ -24,6 +24,11 @@ namespace lm
         */
         FMat4() = default;
 
+        FMat4(float p_00, float p_01, float p_02, float p_03,
+            float p_10, float p_11, float p_12, float p_13,
+            float p_20, float p_21, float p_22, float p_23,
+            float p_30, float p_31, float p_32, float p_33);
+
         /**
          * @brief Creates a new matrix with diagonal set to p_init
          * @param p_init The value to set the diagonal to
@@ -157,6 +162,16 @@ namespace lm
          * @note The rotation vector is in degrees
         */
         static FMat4 Rotate(const FMat4& p_matrix, const FVec3& p_rotation);
+
+        /**
+         * @brief Rotates a matrix
+         * @param p_matrix The matrix to rotate
+         * @param p_angle The angle to rotate
+         * @param p_axis The axis to rotate around
+         * @return The rotated matrix
+         * @note The angle is in degrees
+        */
+        static FMat4 Rotate(const FMat4& p_matrix, float p_angle, const FVec3& p_axis);
 
         /**
          * @brief Scales a matrix

@@ -315,7 +315,7 @@ namespace lm
 
 		Quaternion<T> rotate(const Vec3<T>& axis, float angle)
 		{
-			radAngle = TO_RADIANS(angle);
+			float radAngle = TO_RADIANS(angle);
 			float halfAngle = radAngle / 2;
 			T sinHalfAngle = sin(halfAngle);
 			T cosHalfAngle = cos(halfAngle);

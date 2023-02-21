@@ -5,6 +5,7 @@
 #include <cmath>
 
 #include "../Utilities.h"
+#include "Vec4/FVec4.hpp"
 #include <algorithm>
 #include <limits>
 
@@ -16,12 +17,30 @@ const FVec3 FVec3::Forward(0.0f, 0.0f, 1.0f);
 const FVec3 FVec3::Right(1.0f, 0.0f, 0.0f);
 const FVec3 FVec3::Up(0.0f, 1.0f, 0.0f);
 
-FVec3::FVec3(float p_x, float p_y, float p_z) : x(p_x), y(p_y), z(p_z)
+FVec3::FVec3() : x(0.0f), y(0.0f), z(0.0f)
+{
+}
+
+FVec3::FVec3(float p_x, float p_y, float p_z)
+{
+    this->x = p_x;
+    this->y = p_y;
+    this->z = p_z;
+}
+
+FVec3::FVec3(const struct FVec4& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z)
 {
 }
 
 FVec3::FVec3(const FVec3& p_toCopy) : x(p_toCopy.x), y(p_toCopy.y), z(p_toCopy.z)
 {
+}
+
+FVec3::FVec3(float p_init)
+{
+    this->x = p_init;
+    this->y = p_init;
+    this->z = p_init;
 }
 
 FVec3 FVec3::operator-() const
@@ -58,6 +77,24 @@ FVec3& FVec3::operator-=(const FVec3& p_other)
 {
     *this = Substract(*this, p_other);
     return *this;
+}
+
+FVec3& lm::FVec3::operator/(const FVec3& p_other)
+{
+    FVec3 result = *this;
+    result.x /= p_other.x;
+    result.y /= p_other.y;
+    result.z /= p_other.z;
+    return result;
+}
+
+FVec3& lm::FVec3::operator/(const FVec3& p_other) const
+{
+    FVec3 result = *this;
+    result.x /= p_other.x;
+    result.y /= p_other.y;
+    result.z /= p_other.z;
+    return result;
 }
 
 FVec3 FVec3::operator*(float p_scalar) const
@@ -234,6 +271,11 @@ FVec3 FVec3::Normalize(const FVec3& p_target)
     }
 }
 
+float FVec3::Length2(const FVec3& p_target)
+{
+    return p_target.x * p_target.x + p_target.y * p_target.y + p_target.z * p_target.z;
+}
+
 FVec3 FVec3::Lerp(const FVec3& p_start, const FVec3& p_end, float p_alpha)
 {
     return (p_start + (p_end - p_start) * p_alpha);
@@ -256,14 +298,16 @@ float FVec3::AngleBetween(const FVec3& p_from, const FVec3& p_to)
 
 FVec3 FVec3::Project(const FVec3& p_target, const FVec3& p_onNormal)
 {
-    float dot = Dot(p_target, p_onNormal);
+    float aDotb = Dot(p_target, p_onNormal);
 
-    return FVec3
-    (
-        p_onNormal.x * dot,
-        p_onNormal.y * dot,
-        p_onNormal.z * dot
-    );
+    float bDotB = Dot(p_onNormal, p_onNormal);
+
+    if (bDotB == 0.0f)
+    {
+        return FVec3::Zero;
+    }
+
+    return (aDotb / bDotB) * p_onNormal;
 }
 
 FVec3 FVec3::Reflect(const FVec3& p_target, const FVec3& p_normal)
@@ -313,7 +357,14 @@ std::ostream& lm::operator<<(std::ostream& p_stream, const FVec3& p_target)
 
 std::istream& lm::operator>>(std::istream& p_stream, FVec3& p_target)
 {
-    p_stream >> p_target.x >> p_target.y >> p_target.z;
+    char c;
+    p_stream >> c;
+    p_stream >> p_target.x;
+    p_stream >> c;
+    p_stream >> p_target.y;
+    p_stream >> c;
+    p_stream >> p_target.z;
+    p_stream >> c;
 
     return p_stream;
 }
@@ -346,4 +397,32 @@ FVec3 lm::operator*(const FVec3& p_vec, const FVec3& p_vec2)
         p_vec.y * p_vec2.y,
         p_vec.z * p_vec2.z
     );
+}
+
+FVec3 lm::operator/= (FVec3& p_left, const FVec3& p_right)
+{
+    p_left.x /= p_right.x;
+    p_left.y /= p_right.y;
+    p_left.z /= p_right.z;
+
+    return p_left;
+}
+
+FVec3 lm::operator*= (FVec3& p_left, const FVec3& p_right)
+{
+    p_left.x *= p_right.x;
+    p_left.y *= p_right.y;
+    p_left.z *= p_right.z;
+
+    return p_left;
+}
+
+bool lm::operator==(const FVec3& p_left, const  FVec3& p_right)
+{
+    return p_left.x == p_right.x && p_left.y == p_right.y && p_left.z == p_right.z;
+}
+
+bool lm::operator!=(const FVec3& p_left, const  FVec3& p_right)
+{
+    return p_left.x != p_right.x || p_left.y != p_right.y || p_left.z != p_right.z;
 }
