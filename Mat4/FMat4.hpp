@@ -61,7 +61,7 @@ namespace lm
         FMat4& operator*=(const FMat4& p_other);
         FVec4 operator*(const FVec4& p_other) const;
         FMat4 operator*(float p_scalar) const;
-        FMat4& operator*=(float p_scalar);
+        FVec4& operator*(const FVec3& p_other);
         FMat4 operator/(float p_scalar) const;
         FMat4& operator/=(float p_scalar);
         FMat4 operator+(const FMat4& p_other) const;
@@ -77,6 +77,10 @@ namespace lm
         float& operator[](const char* p_index);
         const float& operator[](const char* p_index) const;
         FMat4 operator-() const;
+
+        bool IsOrthogonal() const;
+
+        static FMat4 InverseOrtho(const FMat4& p_matrix);
 
         /**
          * @brief Creates a new identity matrix
