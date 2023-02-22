@@ -129,7 +129,7 @@ FVec4 FMat4::operator*(const FVec4& p_other) const
 	return result;
 }
 
-FVec4& FMat4::operator*(const FVec3& p_other)
+FVec4 FMat4::operator*(const FVec3& p_other) const
 {
    FVec4 result;
    for (size_t i = 0; i < 4; i++)

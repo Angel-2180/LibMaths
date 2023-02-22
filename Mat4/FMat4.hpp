@@ -61,7 +61,7 @@ namespace lm
         FMat4& operator*=(const FMat4& p_other);
         FVec4 operator*(const FVec4& p_other) const;
         FMat4 operator*(float p_scalar) const;
-        FVec4& operator*(const FVec3& p_other);
+        FVec4 operator*(const FVec3& p_other) const;
         FMat4 operator/(float p_scalar) const;
         FMat4& operator/=(float p_scalar);
         FMat4 operator+(const FMat4& p_other) const;
