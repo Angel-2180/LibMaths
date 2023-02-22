@@ -66,15 +66,6 @@ const float FQuat::operator[](const int index) const
     }
 }
 
-const FVec3& lm::FQuat::getVec3Part() const
-{
-    return FVec3(x, y, z);
-}
-
-const FVec4& lm::FQuat::getVec4Part() const
-{
-    return FVec4(x, y, z, w);
-}
 
 float FQuat::Length2(const FQuat& q)
 {

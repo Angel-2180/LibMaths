@@ -78,19 +78,7 @@ namespace lm
 
         const float operator[](const int index) const;
 
-        /**
-         * @brief Get the vector part of the quaternion
-         * @details Get the vector part of the quaternion
-         * @return A new vector with the same components as the vector part of the quaternion
-        */
-        const FVec3& getVec3Part() const;
 
-        /**
-         * @brief Get the vector part of the quaternion
-         * @details Get the vector part of the quaternion
-         * @return A new vector with the same components as the vector part of the quaternion
-        */
-        const FVec4& getVec4Part() const;
 
         /************************************\
         *                                    *
