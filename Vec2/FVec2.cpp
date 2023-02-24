@@ -314,7 +314,7 @@ bool FVec2::IsZero() const
 
 FVec2 FVec2::Reflect(const FVec2& p_target, const FVec2& p_normal)
 {
-    return p_target - 2.0f * Dot(p_target, p_normal) * p_normal;
+    return p_target - p_normal * Dot(p_target, p_normal) * 2.0f;
 }
 
 FVec2 FVec2::Project(const FVec2& p_target, const FVec2& p_normal)
