@@ -61,13 +61,7 @@ FVec2 FVec2::operator*(float p_scalar) const
     return Multiply(*this, p_scalar);
 }
 
-FVec2 lm::FVec2::operator*(const FVec2 &p_other) const
-{
-    return FVec2(
-        this->x * p_other.x,
-        this->y * p_other.y
-    );
-}
+
 
 FVec2 &lm::FVec2::operator*=(const FVec2 &p_other)
 {
@@ -78,13 +72,7 @@ FVec2 &lm::FVec2::operator*=(const FVec2 &p_other)
     return *this;
 }
 
-FVec2 lm::FVec2::operator/(const FVec2 &p_other) const
-{
-    return FVec2(
-        this->x / p_other.x,
-        this->y / p_other.y
-    );
-}
+
 
 FVec2 &lm::FVec2::operator/=(const FVec2 &p_other)
 {
