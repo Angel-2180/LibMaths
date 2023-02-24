@@ -11,8 +11,11 @@ using namespace lm;
 const FVec2 FVec2::One(1.0f, 1.0f);
 const FVec2 FVec2::Zero(0.0f, 0.0f);
 
-FVec2::FVec2(float p_x, float p_y) :
-    x(p_x), y(p_y)
+lm::FVec2::FVec2(const float p_init) : x(p_init), y(p_init)
+{
+}
+
+FVec2::FVec2(float p_x, float p_y) : x(p_x), y(p_y)
 {
 }
 

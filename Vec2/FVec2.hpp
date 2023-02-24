@@ -14,6 +14,7 @@ namespace lm
         
         FVec2() = default;     
         
+        FVec2(const float p_init);
         
         /**
         * Default constructor
