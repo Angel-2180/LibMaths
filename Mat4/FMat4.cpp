@@ -8,20 +8,10 @@ const FMat4 FMat4::IdentityMatrix(1.0f);
 
 FMat4::FMat4(float p_init)
 {
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			if (i == j)
-			{
-				m_matrix[i][j] = p_init;
-			}
-			else
-			{
-				m_matrix[i][j] = 0.0f;
-			}
-		}
-	}
+	m_matrix[0] = FVec4(p_init, 0, 0, 0);
+	m_matrix[1] = FVec4(0, p_init, 0, 0);
+	m_matrix[2] = FVec4(0, 0, p_init, 0);
+	m_matrix[3] = FVec4(0, 0, 0, p_init);
 }
 
 FMat4::FMat4(float p_00, float p_01, float p_02, float p_03,
@@ -117,32 +107,29 @@ FMat4& FMat4::operator*=(const FMat4& p_other)
 
 FVec4 FMat4::operator*(const FVec4& p_other) const
 {
-	FVec4 result;
-	for (int i = 0; i < 4; i++)
-	{
-		result[i] = 0.0f;
-		for (int j = 0; j < 4; j++)
-		{
-			result[i] += m_matrix[i][j] * p_other[j];
-		}
-	}
+	
+    FVec4 result = {
+        m_matrix[0].x * p_other.x + m_matrix[1].x * p_other.y + m_matrix[2].x * p_other.z + m_matrix[3].x,
+        m_matrix[0].y * p_other.x + m_matrix[1].y * p_other.y + m_matrix[2].y * p_other.z + m_matrix[3].y,
+        m_matrix[0].z * p_other.x + m_matrix[1].z * p_other.y + m_matrix[2].z * p_other.z + m_matrix[3].z,
+        m_matrix[0].w * p_other.x + m_matrix[1].w * p_other.y + m_matrix[2].w * p_other.z + m_matrix[3].w
+    };
 	return result;
 }
 
-FVec4 FMat4::operator*(const FVec3& p_other) const
+FVec3 FMat4::operator*(const FVec3& p_other) const
 {
-   FVec4 result;
-   for (size_t i = 0; i < 4; i++)
-   {
-        result[i] = 
-        m_matrix[i][0] * p_other[0] + 
-        m_matrix[i][1] * p_other[1] + 
-        m_matrix[i][2] * p_other[2] + 
-        m_matrix[i][3];
-
-   }
-    return result;
+	 
+    FVec4 v = {p_other.x, p_other.y, p_other.z, 1.0f};
+    FVec4 result = {
+        m_matrix[0].x * v.x + m_matrix[1].x * v.y + m_matrix[2].x * v.z + m_matrix[3].x,
+        m_matrix[0].y * v.x + m_matrix[1].y * v.y + m_matrix[2].y * v.z + m_matrix[3].y,
+        m_matrix[0].z * v.x + m_matrix[1].z * v.y + m_matrix[2].z * v.z + m_matrix[3].z,
+        m_matrix[0].w * v.x + m_matrix[1].w * v.y + m_matrix[2].w * v.z + m_matrix[3].w
+    };
+    return FVec3 {result.x / result.w, result.y / result.w, result.z / result.w};
 }
+
 
 FMat4 FMat4::operator*(float p_scalar) const
 {
@@ -252,8 +239,9 @@ FMat4 lm::FMat4::InverseOrtho(const FMat4 &p_matrix)
 {
     if (!p_matrix.IsOrthogonal()) 
     {
-        return FMat4();
+        throw std::runtime_error("Matrix is not orthogonal");
     }
+	return FMat4::Transpose(p_matrix);
     
 }
 
