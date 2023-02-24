@@ -61,6 +61,40 @@ FVec2 FVec2::operator*(float p_scalar) const
     return Multiply(*this, p_scalar);
 }
 
+FVec2 lm::FVec2::operator*(const FVec2 &p_other) const
+{
+    return FVec2(
+        this->x * p_other.x,
+        this->y * p_other.y
+    );
+}
+
+FVec2 &lm::FVec2::operator*=(const FVec2 &p_other)
+{
+    *this = FVec2(
+        this->x * p_other.x,
+        this->y * p_other.y
+    );
+    return *this;
+}
+
+FVec2 lm::FVec2::operator/(const FVec2 &p_other) const
+{
+    return FVec2(
+        this->x / p_other.x,
+        this->y / p_other.y
+    );
+}
+
+FVec2 &lm::FVec2::operator/=(const FVec2 &p_other)
+{
+    *this = FVec2(
+        this->x / p_other.x,
+        this->y / p_other.y
+    );
+    return *this;
+}
+
 FVec2& FVec2::operator*=(float p_scalar)
 {
     *this = Multiply(*this, p_scalar);
@@ -302,4 +336,22 @@ bool FVec2::IsUnit() const
     return std::abs(Length(*this) - 1.0f) <= std::numeric_limits<float>::epsilon() ||
         std::abs(Length(*this) - 1.0f) <= std::numeric_limits<float>::epsilon() *
         std::max(std::abs(Length(*this)), std::abs(1.0f));
+}
+
+FVec2 lm::operator*(const FVec2& p_vec, const FVec2& p_other)
+{
+    return FVec2
+    (
+        p_vec.x * p_other.x,
+        p_vec.y * p_other.y
+    );
+}
+
+FVec2 lm::operator/(const FVec2& p_vec, const FVec2& p_other)
+{
+    return FVec2
+    (
+        p_vec.x / p_other.x,
+        p_vec.y / p_other.y
+    );
 }

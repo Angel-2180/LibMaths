@@ -11,12 +11,18 @@ namespace lm
         float x;
         float y;
 
+        
+        FVec2() = default;     
+        
+        
         /**
         * Default constructor
         * @param p_x
         * @param p_y
         */
-        FVec2(float p_x = 0.0f, float p_y = 0.0f);
+        FVec2(float p_x , float p_y );
+
+
 
         /**
         * Copy constructor
@@ -70,6 +76,12 @@ namespace lm
         * @param p_scalar
         */
         FVec2 operator*(float p_scalar) const;
+
+        FVec2 operator*(const FVec2& p_other) const;
+        FVec2& operator*=(const FVec2& p_other);
+
+        FVec2 operator/(const FVec2& p_other) const;
+        FVec2& operator/=(const FVec2& p_other);
 
         /**
         * Multiply the vector by a scalar
@@ -246,6 +258,10 @@ namespace lm
      * @param p_vec
     */
     FVec2 operator*(float p_scalar, const FVec2& p_vec);
+
+    FVec2 operator*(const FVec2& p_vec, const FVec2& p_other);
+
+    FVec2 operator/(const FVec2& p_vec, const FVec2& p_other);
 
     /**
      * Return the division of scalar and actual vector
