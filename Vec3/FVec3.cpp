@@ -283,17 +283,13 @@ FVec3 FVec3::Lerp(const FVec3& p_start, const FVec3& p_end, float p_alpha)
 
 float FVec3::AngleBetween(const FVec3& p_from, const FVec3& p_to)
 {
-    float lengthProduct = Length(p_from) * Length(p_to);
+   auto vec1 =  Normalize(p_from);
+   auto vec2 = Normalize(p_to);
+    float dot = Dot(vec1, vec2);
+    float lenSq1 = Length2(vec1);
+    float lenSq2 = Length2(vec2);
+    return std::acos(dot / std::sqrt(lenSq1 * lenSq2));
 
-    if (lengthProduct > 0.0f)
-    {
-        float fractionResult = Dot(p_from, p_to) / lengthProduct;
-
-        if (fractionResult >= -1.0f && fractionResult <= 1.0f)
-            return acosf(fractionResult);
-    }
-
-    return 0.0f;
 }
 
 FVec3 FVec3::Project(const FVec3& p_target, const FVec3& p_onNormal)
