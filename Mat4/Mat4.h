@@ -2,6 +2,8 @@
 #include "../Vec4/Vec4.h"
 #include <iostream>
 
+#include "Utilities.h"
+
 namespace lm
 {
 	template <typename T> class Mat4
@@ -203,7 +205,7 @@ namespace lm
 
 		static Mat4<T> xRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["y1"] = std::cosf(rad);
@@ -217,7 +219,7 @@ namespace lm
 
 		static Mat4<T> yRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["x0"] = std::cosf(rad);
@@ -231,7 +233,7 @@ namespace lm
 
 		static Mat4<T> zRotation(float angle)
 		{
-			float rad = float(Vec4<T>::degreesToRadians(double(angle)));
+			float rad = float(degreesToRadians(double(angle)));
 
 			Mat4<T> matrixScale;
 			matrixScale["x0"] = std::cosf(rad);
@@ -245,7 +247,7 @@ namespace lm
 
 		static Mat4<T> perspectiveProjection(float fovy, float aspect, float pnear, float pfar)
 		{
-			float scale = static_cast<float>(tan(fovy * M_PI / 360) * pnear);
+			float scale = static_cast<float>(tan(fovy * PI / 360) * pnear);
 			float r = aspect * scale;
 			float l = -r;
 			float t = scale;

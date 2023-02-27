@@ -2,13 +2,11 @@
 #include <limits>
 #include <algorithm>
 #include "../Vec3/Vec3.h"
-
-#ifndef HALF_CIRCLE
-	#define HALF_CIRCLE 180.0f
-#endif
+#include "Utilities.h"
 
 namespace lm
 {
+	
 	template <typename T> class Vec4
 	{
 	private:
@@ -18,15 +16,6 @@ namespace lm
 		T w;
 
 	public:
-		const double static radiansToDegrees(const double rad)
-		{
-			return rad * (HALF_CIRCLE / M_PI);
-		}
-
-		const double static degreesToRadians(const double deg)
-		{
-			return deg * (M_PI / HALF_CIRCLE);
-		}
 
 		static const T unitVal;
 		static const Vec4<T> zero;
@@ -173,8 +162,8 @@ namespace lm
 		const Vec4<T> crossProduct(const Vec4<T>& vec4) const
 		{
 			return Vec4<T>((this->y * vec4->z) - (this->z * vec4->y),
-							(this->z * vec4->x) - (this->x * vec4->z),
-							(this->x * vec4->y) - (this->y * vec4->x)), 1;
+				(this->z * vec4->x) - (this->x * vec4->z),
+				(this->x * vec4->y) - (this->y * vec4->x)), 1;
 		}
 
 		const T radAngle(const Vec4<T>& vec4) const

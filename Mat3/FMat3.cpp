@@ -43,12 +43,14 @@ FMat3::FMat3(const FMat4& p_mat4)
 	m_matrix[2] = p_mat4[2];
 }
 
-FMat3::FMat3(FMat4&& mat4) noexcept
+FMat3::FMat3(FMat4&& mat4) noexcept 
+
 {
 	m_matrix[0] = mat4[0];
 	m_matrix[1] = mat4[1];
 	m_matrix[2] = mat4[2];
 }
+
 
 FMat3::FMat3(const FMat3& p_mat3)
 {
@@ -75,6 +77,7 @@ const FVec3& FMat3::operator[](const unsigned int p_index) const
 {
 	return m_matrix[p_index];
 }
+
 
 FMat3 FMat3::operator+(const FMat3& p_mat3) const
 {
@@ -205,6 +208,8 @@ FMat3 FMat3::Inverse(const FMat3& mat3)
 	return Inverse;
 }
 
+
+
 FMat3 FMat3::Rotation(float p_angle, const FVec3& p_axis)
 {
 	FMat3 result = FMat3::Identity();
@@ -225,12 +230,15 @@ FMat3 FMat3::Rotation(float p_angle, const FVec3& p_axis)
 
 	
 	return  Transpose(result);
+
 }
 
 FMat3 FMat3::Rotate(const FMat3& p_mat, const float p_angle, const FVec3& p_axis)
 {
+
 	float radAngle = TO_RADIANS(p_angle);
 	float const a = radAngle;
+
 	float const c = cos(a);
 	float const s = sin(a);
 
@@ -284,6 +292,7 @@ FMat3 FMat3::Scale(const float p_scaleX, const float p_scaleY, const float p_sca
 	result.m_matrix[2][2] = p_scaleZ;
 	return result;
 }
+
 
 FMat3 FMat3::Multiply(const FMat3& p_mat1, const FMat3& p_mat2)
 {
@@ -375,6 +384,7 @@ FMat3 FMat3::Divide(const FMat3& p_mat1, const FMat3& p_mat2)
 	}
 	return result;
 }
+
 
 float* lm::FMat3::ToArray(const FMat3& mat3)
 {

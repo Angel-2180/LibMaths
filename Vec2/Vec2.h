@@ -17,15 +17,6 @@
 
 namespace lm
 {
-	const double static radiansToDegrees(const double rad)
-	{
-		return rad * (HALF_CIRCLE / M_PI);
-	}
-
-	const double static degreesToRadians(const double deg)
-	{
-		return deg * (M_PI / HALF_CIRCLE);
-	}
 
 	template <typename T> class Vec2
 	{

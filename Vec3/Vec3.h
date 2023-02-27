@@ -1,29 +1,17 @@
 #pragma once
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <cmath>
+
 #include <iostream>
 #include <string>
 #include <limits>
 #include <algorithm>
 
-#ifndef HALF_CIRCLE
-#define HALF_CIRCLE 180.0f
-#endif
+#include "Utilities.h"
 
 namespace lm
 {
 	template <typename T> class Vec3
 	{
-		const double static radiansToDegrees(const double rad)
-		{
-			return rad * (HALF_CIRCLE / M_PI);
-		}
 
-		const double static degreesToRadians(const double deg)
-		{
-			return deg * (M_PI / HALF_CIRCLE);
-		}
 
 	private:
 		T x;
@@ -139,8 +127,8 @@ namespace lm
 
 		const bool isUnit() const
 		{
-			return std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() ||
-				std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() * std::max(std::abs(this->length()), std::abs(Vec3<T>::unitVal));
+	return std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() ||
+		std::abs(this->length() - Vec3<T>::unitVal) <= std::numeric_limits<T>::epsilon() * std::max(std::abs(this->length()), std::abs(Vec3<T>::unitVal));
 		}
 
 		const T dotProduct(const Vec3<T>& vec3) const

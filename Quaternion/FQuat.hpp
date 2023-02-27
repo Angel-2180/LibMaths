@@ -4,6 +4,7 @@
 
 namespace lm
 {
+
 	struct FVec3;
 	struct FVec4;
 	struct FMat4;

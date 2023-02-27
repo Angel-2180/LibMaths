@@ -20,6 +20,7 @@ namespace lm
 		FMat3(float p_00, float p_01, float p_02, float p_10, float p_11,
 			float p_12, float p_20, float p_21, float p_22);
 		FMat3(const FVec3& v1, const FVec3& v2, const FVec3& v3);
+
 		FMat3(const FMat3& mat3);
 		FMat3(FMat3&& mat3) noexcept = default;
 		FMat3(const FMat4& mat4);
@@ -115,6 +116,7 @@ namespace lm
 		static FMat3 Scale(const float scale);
 
 
+
 		/**
 		 * @brief Returns the Multiplied matrix of the given matrix and scalar
 		 * @param mat3 Matrix to multiply
@@ -178,13 +180,12 @@ namespace lm
 		*/
 		static FMat3 Divide(const FMat3& mat3, const FMat3& mat3_2);
 
-		/**
+/**
 		 * @brief Returns the array of the given matrix
 		 * @param mat3 Matrix to convert to array
 		 * @return float* Array of the given matrix
 		*/
 		static float* ToArray(const FMat3& mat3);
-
 
 	};
 

@@ -8,6 +8,7 @@ const FMat4 FMat4::IdentityMatrix(1.0f);
 
 FMat4::FMat4(float p_init)
 {
+
 	m_matrix[0] = FVec4(p_init, 0, 0, 0);
 	m_matrix[1] = FVec4(0, p_init, 0, 0);
 	m_matrix[2] = FVec4(0, 0, p_init, 0);
@@ -50,6 +51,7 @@ FMat4::FMat4(FVec4 p_row1, FVec4 p_row2, FVec4 p_row3, FVec4 p_row4)
 
 FMat4::FMat4(const FVec3& p_position, const FQuat& p_rotation)
 {
+
 	FMat4 result = FMat4::ToMat4(FQuat::ToRotateMat3(p_rotation));
 
 	result = FMat4::Translate(result, p_position);
@@ -66,6 +68,7 @@ FMat4::FMat4(const FMat4& p_toCopy)
 		}
 	}
 }
+
 
 lm::FMat4::FMat4(const FMat3& p_toCopy)
 {
@@ -124,6 +127,7 @@ FMat4& FMat4::operator*=(const FMat4& p_other)
 
 FVec4 FMat4::operator*(const FVec4& p_other) const
 {
+
 	FVec4 result = {
 		m_matrix[0].x * p_other.x + m_matrix[1].x * p_other.y + m_matrix[2].x * p_other.z + m_matrix[3].x,
 		m_matrix[0].y * p_other.x + m_matrix[1].y * p_other.y + m_matrix[2].y * p_other.z + m_matrix[3].y,
@@ -144,6 +148,7 @@ FVec3 FMat4::operator*(const FVec3& p_other) const
 	};
 	return FVec3{ result.x / result.w, result.y / result.w, result.z / result.w };
 }
+
 
 FMat4 FMat4::operator*(float p_scalar) const
 {
@@ -208,6 +213,7 @@ FMat4 FMat4::operator-() const
 	}
 	return result;
 }
+
 
 bool lm::FMat4::IsOrthogonal() const
 {
@@ -304,6 +310,7 @@ const FVec4& FMat4::operator[](int p_index) const
 	return m_matrix[p_index];
 }
 
+
 FMat4 FMat4::Identity()
 {
 	FMat4 result;
@@ -322,6 +329,7 @@ FMat4 FMat4::Translation(const FVec3& p_translation)
 	result[3][2] = p_translation.z;
 	return result;
 }
+
 
 FMat4 FMat4::RotationEuler(const FVec3& p_rotation)
 {
@@ -441,6 +449,7 @@ FMat4 FMat4::Translate(const FMat4& p_matrix, const FVec3& p_translation)
 FMat4 FMat4::Rotate(const FMat4& p_matrix, const FVec3& p_rotation)
 {
 	FMat4 result = p_matrix;
+
 	result = FMat4::ZRotation(Identity(), p_rotation.z) * FMat4::XRotation(Identity(), p_rotation.x) * FMat4::YRotation(Identity(), p_rotation.y);
 	return result;
 }
@@ -503,6 +512,7 @@ FMat4 FMat4::Multiply(const FMat4& p_matrix1, const FMat4& p_matrix2)
 FMat4 FMat4::Transform(const FVec3& p_translation, const FVec3& p_rotation, const FVec3& p_scale)
 {
 	FMat4 result = FMat4::Identity();
+
 	result = FMat4::Translation(p_translation) * FMat4::YXZRotation(p_rotation) * FMat4::Scale(result, p_scale);
 	return result;
 }
@@ -566,6 +576,7 @@ FMat4 FMat4::ZRotation(const FMat4& p_matrix, float p_angle)
 	result = FMat4::Multiply(result, FMat4::ZRotation(p_angle));
 	return result;
 }
+
 
 FMat4 FMat4::YXZRotation(const FVec3& p_rotation)
 {

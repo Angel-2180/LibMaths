@@ -7,6 +7,7 @@
 
 namespace lm
 {
+   
 	struct FVec3;
 	struct FQuat;
 	struct FMat3;
