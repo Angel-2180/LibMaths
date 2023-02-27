@@ -44,20 +44,13 @@ FMat3::FMat3(const FMat4& p_mat4)
 }
 
 FMat3::FMat3(FMat4&& mat4) noexcept 
+
 {
 	m_matrix[0] = mat4[0];
 	m_matrix[1] = mat4[1];
 	m_matrix[2] = mat4[2];
 }
 
-FMat3::FMat3(const FVec3& p_position, const FQuat& p_rotation)
-{
-	FMat3 result = FQuat::ToMatrix3(p_rotation);
-
-	result = FMat3::Translation(p_position);
-
-	*this = result;
-}
 
 FMat3::FMat3(const FMat3& p_mat3)
 {
@@ -85,39 +78,6 @@ const FVec3& FMat3::operator[](const unsigned int p_index) const
 	return m_matrix[p_index];
 }
 
-float& FMat3::operator()(const unsigned int p_row, const unsigned int p_col)
-{
-	return m_matrix[p_row][p_col];
-}
-
-float FMat3::operator()(const unsigned int p_row, const unsigned int p_col) const
-{
-	return m_matrix[p_row][p_col];
-}
-
-float& FMat3::operator()(const char* p_index)
-{
-	unsigned int vecIdx = p_index[1] - '1';
-	switch (p_index[0])
-	{
-	case 'x': return m_matrix[vecIdx].x;
-	case 'y': return m_matrix[vecIdx].y;
-	case 'z': return m_matrix[vecIdx].z;
-	default: throw std::runtime_error("FMat3::operator(): Invalid index");
-	}
-}
-
-float FMat3::operator()(const char* p_index) const
-{
-	unsigned int vecIdx = p_index[1] - '1';
-	switch (p_index[0])
-	{
-	case 'x': return m_matrix[vecIdx].x;
-	case 'y': return m_matrix[vecIdx].y;
-	case 'z': return m_matrix[vecIdx].z;
-	default: throw std::runtime_error("FMat3::operator(): Invalid index");
-	}
-}
 
 FMat3 FMat3::operator+(const FMat3& p_mat3) const
 {
@@ -248,82 +208,37 @@ FMat3 FMat3::Inverse(const FMat3& mat3)
 	return Inverse;
 }
 
-FMat3 FMat3::RotationX(float p_angle)
-{
-	float radAngle = TO_RADIANS(p_angle);
-	FMat3 result = FMat3::Identity();
-	result.m_matrix[1][1] = cos(radAngle);
-	result.m_matrix[1][2] = -sin(radAngle);
-	result.m_matrix[2][1] = sin(radAngle);
-	result.m_matrix[2][2] = cos(radAngle);
-	return result;
-}
 
-FMat3 FMat3::RotationY(float p_angle)
-{
-	float radAngle = TO_RADIANS(p_angle);
-	FMat3 result = FMat3::Identity();
-	result.m_matrix[0][0] = cos(radAngle);
-	result.m_matrix[0][2] = sin(radAngle);
-	result.m_matrix[2][0] = -sin(radAngle);
-	result.m_matrix[2][2] = cos(radAngle);
-	return result;
-}
-
-FMat3 FMat3::RotationZ(float p_angle)
-{
-	float radAngle = TO_RADIANS(p_angle);
-	FMat3 result = FMat3::Identity();
-	result.m_matrix[0][0] = cos(radAngle);
-	result.m_matrix[0][1] = -sin(radAngle);
-	result.m_matrix[1][0] = sin(radAngle);
-	result.m_matrix[1][1] = cos(radAngle);
-	return result;
-}
 
 FMat3 FMat3::Rotation(float p_angle, const FVec3& p_axis)
 {
-	float radAngle = TO_RADIANS(p_angle);
 	FMat3 result = FMat3::Identity();
-	float c = cos(radAngle);
-	float s = sin(radAngle);
-	float t = 1.0f - c;
-	result.m_matrix[0][0] = t * p_axis.x * p_axis.x + c;
-	result.m_matrix[0][1] = t * p_axis.x * p_axis.y - s * p_axis.z;
-	result.m_matrix[0][2] = t * p_axis.x * p_axis.z + s * p_axis.y;
-	result.m_matrix[1][0] = t * p_axis.x * p_axis.y + s * p_axis.z;
-	result.m_matrix[1][1] = t * p_axis.y * p_axis.y + c;
-	result.m_matrix[1][2] = t * p_axis.y * p_axis.z - s * p_axis.x;
-	result.m_matrix[2][0] = t * p_axis.x * p_axis.z - s * p_axis.y;
-	result.m_matrix[2][1] = t * p_axis.y * p_axis.z + s * p_axis.x;
-	result.m_matrix[2][2] = t * p_axis.z * p_axis.z + c;
-	return result;
-}
+	const FVec3 axis = FVec3::Normalize(p_axis);
+	const float RadAngle = TO_RADIANS(p_angle);
+	const float Rx = axis.x;
+	const float Ry = axis.y;
+	const float Rz = axis.z;
+	const float Rx2 = Rx * Rx;
+	const float Ry2 = Ry * Ry;
+	const float Rz2 = Rz * Rz;
+	const float cosTheta = std::cosf(RadAngle);
+	const float sinTheta = std::sinf(RadAngle);
 
-FMat3 FMat3::Rotation(const FVec3& p_rotation)
-{
-	FMat3 result = FMat3::Identity();
-	result = FMat3::RotationX(p_rotation.x) * FMat3::RotationY(p_rotation.y) * FMat3::RotationZ(p_rotation.z);
-	return result;
-}
+	result[0] = FVec3(cosTheta + Rx2 * (1 - cosTheta), Rx * Ry * (1 - cosTheta) - Rz * sinTheta, Rx * Rz * (1 - cosTheta) + Ry * sinTheta);
+	result[1] = FVec3(Ry * Rx * (1 - cosTheta) + Rz * sinTheta, cosTheta + Ry2 * (1 - cosTheta), Ry * Rz * (1 - cosTheta) - Rx * sinTheta);
+	result[2] = FVec3(Rz * Rx * (1 - cosTheta) - Ry * sinTheta, Rz * Ry * (1 - cosTheta) + Rx * sinTheta, cosTheta + Rz2 * (1 - cosTheta));
 
-FMat3 FMat3::Rotation(const float p_angle)
-{
-	FMat3 result = FMat3::Identity();
-	result = FMat3::RotationX(p_angle) * FMat3::RotationY(p_angle) * FMat3::RotationZ(p_angle);
-	return result;
-}
+	
+	return  Transpose(result);
 
-FMat3 FMat3::Rotation(const float p_angleX, const float p_angleY, const float p_angleZ)
-{
-	FMat3 result = FMat3::Identity();
-	result = FMat3::RotationX(p_angleX) * FMat3::RotationY(p_angleY) * FMat3::RotationZ(p_angleZ);
-	return result;
 }
 
 FMat3 FMat3::Rotate(const FMat3& p_mat, const float p_angle, const FVec3& p_axis)
 {
-	float const a = p_angle;
+
+	float radAngle = TO_RADIANS(p_angle);
+	float const a = radAngle;
+
 	float const c = cos(a);
 	float const s = sin(a);
 
@@ -378,23 +293,6 @@ FMat3 FMat3::Scale(const float p_scaleX, const float p_scaleY, const float p_sca
 	return result;
 }
 
-FMat3 FMat3::Translation(const FVec3& p_translation)
-{
-	FMat3 result = FMat3::Identity();
-	result.m_matrix[2][0] = p_translation.x;
-	result.m_matrix[2][1] = p_translation.y;
-	result.m_matrix[2][2] = p_translation.z;
-	return result;
-}
-
-FMat3 FMat3::Translation(const float p_x, const float p_y, const float p_z)
-{
-	FMat3 result = FMat3::Identity();
-	result.m_matrix[2][0] = p_x;
-	result.m_matrix[2][1] = p_y;
-	result.m_matrix[2][2] = p_z;
-	return result;
-}
 
 FMat3 FMat3::Multiply(const FMat3& p_mat1, const FMat3& p_mat2)
 {
@@ -487,12 +385,6 @@ FMat3 FMat3::Divide(const FMat3& p_mat1, const FMat3& p_mat2)
 	return result;
 }
 
-FMat3 FMat3::Transform(const FVec3& p_position, const FVec3& p_rotation, const FVec3& p_scale)
-{
-	FMat3 result = FMat3::Identity();
-	result = FMat3::Translation(p_position) * FMat3::Rotation(p_rotation) * FMat3::Scale(p_scale);
-	return result;
-}
 
 float* lm::FMat3::ToArray(const FMat3& mat3)
 {
