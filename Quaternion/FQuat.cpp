@@ -11,14 +11,12 @@ lm::FQuat::FQuat() : x(0), y(0), z(0), w(0) {}
 
 lm::FQuat::FQuat(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
 
-
 lm::FQuat::FQuat(const float p_init) : x(p_init), y(p_init), z(p_init), w(0) {}
 
 lm::FQuat::FQuat(FQuat const& q) : x(q.x), y(q.y), z(q.z), w(q.w) {}
 
 lm::FQuat::FQuat(FVec3 axis, float angle)
 {
-
 	float radAngle = TO_RADIANS(angle);
 	axis = FVec3::Normalize(axis);
 	float s = sin(radAngle / 2);
@@ -34,7 +32,6 @@ const FQuat FQuat::identity = FQuat(0, 0, 0, 1);
 
 float& FQuat::operator[](const int index)
 {
-
 	switch (index)
 	{
 	case 0:		return x;
@@ -54,7 +51,6 @@ float& FQuat::operator[](const int index)
 
 const float FQuat::operator[](const int index) const
 {
-
 	switch (index)
 	{
 	case 0:		return x;
@@ -74,44 +70,37 @@ const float FQuat::operator[](const int index) const
 
 float FQuat::Length2(const FQuat& q)
 {
-
 	return (q.x * q.x) + (q.y * q.y) + (q.z * q.z) + (q.w * q.w);
 }
 
 float FQuat::Length(const FQuat& q)
 {
-
 	return sqrt(Length2(q));
 }
 
 FQuat lm::FQuat::Normalize(const FQuat& q)
 {
-
 	float length = Length(q);
 	return FQuat(q.x / length, q.y / length, q.z / length, q.w / length);
 }
 
 FQuat FQuat::Conjugate(const FQuat& q)
 {
-
 	return FQuat(-q.x, -q.y, -q.z, q.w);
 }
 
 FQuat FQuat::Inverse(const FQuat& q)
 {
-
 	return Conjugate(q) / Length2(q);
 }
 
 float FQuat::Dot(const FQuat& q1, const FQuat& q2)
 {
-
 	return (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 }
 
 FQuat FQuat::Cross(const FQuat& q1, const FQuat& q2)
 {
-
 	return FQuat(
 		(q1.w * q2.x) + (q1.x * q2.w) + (q1.y * q2.z) - (q1.z * q2.y),
 		(q1.w * q2.y) + (q1.y * q2.w) + (q1.z * q2.x) - (q1.x * q2.z),
@@ -190,7 +179,7 @@ FQuat lm::FQuat::operator-() const
 
 const FQuat lm::FQuat::operator+(FQuat const& q) const
 {
-	return FQuat(*this) += q; 
+	return FQuat(*this) += q;
 }
 
 const FQuat lm::FQuat::operator-(FQuat const& q) const
@@ -200,7 +189,6 @@ const FQuat lm::FQuat::operator-(FQuat const& q) const
 
 const FQuat lm::FQuat::operator*(FQuat const& p) const
 {
-
 	FQuat const q(*this);
 	return FQuat(
 		(q.w * p.x) + (q.x * p.w) + (q.y * p.z) - (q.z * p.y),
@@ -212,28 +200,25 @@ const FQuat lm::FQuat::operator*(FQuat const& p) const
 
 const FQuat lm::FQuat::operator*(float const& s) const
 {
-
 	return FQuat(*this) *= s;
 }
 
 const FVec3 lm::FQuat::operator*(FVec3 const& v) const
 {
-	FQuat const q(*this);
-	FQuat const p(v.x, v.y, v.z, 0.0f);
-	FQuat const r = q * p * Conjugate(q);
+	FVec3 const qv(x, y, z);
+	FVec3 const uv = FVec3::Cross(qv, v);
+	FVec3 const uuv = FVec3::Cross(qv, uv);
 
-	return FVec3(r.x, r.y, r.z);
+	return v + ((uv * w) + uuv) * 2.0f;
 }
 
 const FVec4 lm::FQuat::operator*(FVec4 const& v) const
 {
-
 	return FVec4(*this * FVec3(v.x, v.y, v.z), v.w);
 }
 
 const FQuat lm::FQuat::operator/(const float s) const
 {
-
 	return FQuat(
 		x / s, y / s, z / s, w / s);
 }
@@ -245,44 +230,40 @@ bool lm::FQuat::operator==(FQuat const& q) const
 
 bool lm::FQuat::operator!=(FQuat const& q) const
 {
-
 	return x != q.x || y != q.y || z != q.z || w != q.w;
 }
 
 bool lm::FQuat::isUnit() const
 {
-
 	return Dot(*this, *this) == 1;
 }
 
 float lm::FQuat::getAngle() const
 {
-
-	return float(2 * acos(w));
+	if (abs(w) > cosf(TO_RADIANS(0.5f))) {
+		return std::asinf(sqrtf(x * x + y * y + z * z)) * 2.f;
+	}
+	return float(2.f * acos(w));
 }
 
 float lm::FQuat::getAngle(FQuat const& q) const
 {
-
 	return float(2 * acos(Dot(*this, q)));
 }
 
 FQuat FQuat::Rotate(FQuat const& q, FVec3 const& v)
 {
-
 	FQuat qv = FQuat(v.x, v.y, v.z, 0);
 	return q * qv * Inverse(q);
 }
 
 FQuat FQuat::Rotate(FQuat const& p, FQuat const& q)
 {
-
 	return p * q * Inverse(p);
 }
 
 FQuat FQuat::Rotate(FQuat const& q, FVec3 const& v, float const& angle)
 {
-
 	return Rotate(q, FQuat(v, angle));
 }
 
@@ -300,60 +281,62 @@ FMat3 lm::FQuat::ToRotateMat3(FQuat const& p_q)
 	float zz = q.z * q.z;
 	float zw = q.z * q.w;
 
-	Result[0]= FVec3(1 - 2* yy - 2 * zz,  2 * xy - 2 * zw, 2 * xz + 2 * yw);
-	Result[1]= FVec3(2 * xy + 2 * zw, 1 - 2 * xx - 2 * zz, 2 * yz - 2 * xw);
-	Result[2]= FVec3(2 * xz - 2 * yw, 2 * yz + 2 * xw, 1 - 2 * xx - 2 * yy);
+	// Result[0] = FVec3(1 - 2 * yy - 2 * zz, 2 * xy - 2 * zw, 2 * xz + 2 * yw);
+	// Result[1] = FVec3(2 * xy + 2 * zw, 1 - 2 * xx - 2 * zz, 2 * yz - 2 * xw);
+	// Result[2] = FVec3(2 * xz - 2 * yw, 2 * yz + 2 * xw, 1 - 2 * xx - 2 * yy);
+	Result[0][0] = float(1) - float(2) * (yy + zz);
+	Result[0][1] = float(2) * (xy + zw);
+	Result[0][2] = float(2) * (xz - yw);
 
+	Result[1][0] = float(2) * (xy - zw);
+	Result[1][1] = float(1) - float(2) * (xx + zz);
+	Result[1][2] = float(2) * (yz + xw);
+
+	Result[2][0] = float(2) * (xz + yw);
+	Result[2][1] = float(2) * (yz - xw);
+	Result[2][2] = float(1) - float(2) * (xx + yy);
 	return Result;
 
 }
 
 FQuat lm::FQuat::FromMatrix3(FMat3 const& m)
 {
-
 	FQuat result;
-	float trace = m[0][0] + m[1][1] + m[2][2];
-	float s = 0.0f;
+	float t;
 
-	if (trace > 0)
+	if (m[2][2] < 0)
 	{
-		s = sqrtf(trace + 1.0f) * 2;
-		result.x = (m[2][1] - m[1][2]) / s;
-		result.y = (m[0][2] - m[2][0]) / s;
-		result.z = (m[1][0] - m[0][1]) / s;
-		result.w = 0.25f * s;
-	}
-	else if (m[0][0] > m[1][1] && m[0][0] > m[2][2])
-	{
-		s = sqrtf(1.0f + m[0][0] - m[1][1] - m[2][2]) * 2;
-		result.x = 0.25f * s;
-		result.y = (m[0][1] + m[1][0]) / s;
-		result.z = (m[0][2] + m[2][0]) / s;
-		result.w = (m[2][1] - m[1][2]) / s;
-	}
-	else if (m[1][1] > m[2][2])
-	{
-		s = sqrtf(1.0f + m[1][1] - m[0][0] - m[2][2]) * 2;
-		result.x = (m[0][1] + m[1][0]) / s;
-		result.y = 0.25f * s;
-		result.z = (m[1][2] + m[2][1]) / s;
-		result.w = (m[0][2] - m[2][0]) / s;
+		if (m[0][0] > m[1][1])
+		{
+			t = 1 + m[0][0] - m[1][1] - m[2][2];
+			result = FQuat(t, m[0][1] + m[1][0], m[2][0] + m[0][2], m[1][2] - m[2][1]);
+		}
+		else
+		{
+			t = 1 - m[0][0] + m[1][1] - m[2][2];
+			result = FQuat(m[0][1] + m[1][0], t, m[1][2] + m[2][1], m[2][0] - m[0][2]);
+		}
 	}
 	else
 	{
-		s = sqrtf(1.0f + m[2][2] - m[0][0] - m[1][1]) * 2;
-		result.x = (m[0][2] + m[2][0]) / s;
-		result.y = (m[1][2] + m[2][1]) / s;
-		result.z = 0.25f * s;
-		result.w = (m[1][0] - m[0][1]) / s;
+		if (m[0][0] < -m[1][1])
+		{
+			t = 1 - m[0][0] - m[1][1] + m[2][2];
+			result = FQuat(m[2][0] + m[0][2], m[1][2] + m[2][1], t, m[0][1] - m[1][0]);
+		}
+		else
+		{
+			t = 1 + m[0][0] + m[1][1] + m[2][2];
+			result = FQuat(m[1][2] - m[2][1], m[2][0] - m[0][2], m[0][1] - m[1][0], t);
+		}
 	}
 
+	result = result * (0.5f / sqrtf(t));
 	return result;
 }
 
 FQuat lm::FQuat::Lerp(FQuat const& q1, FQuat const& q2, float t)
 {
-
 	float alpha = clamp(t, 0.0f, 1.0f);
 	FQuat q = q1 + alpha * (q2 - q1);
 	return q;
@@ -361,7 +344,6 @@ FQuat lm::FQuat::Lerp(FQuat const& q1, FQuat const& q2, float t)
 
 FQuat FQuat::NLerp(FQuat const& q1, FQuat const& q2, float t)
 {
-
 	float alpha = clamp(t, 0.0f, 1.0f);
 	FQuat q;
 
@@ -379,7 +361,6 @@ FQuat FQuat::NLerp(FQuat const& q1, FQuat const& q2, float t)
 
 FQuat FQuat::SLerp(FQuat const& q1, FQuat const& q2, float t)
 {
-
 	FQuat from = q1;
 	FQuat to = q2;
 
@@ -409,32 +390,27 @@ FQuat FQuat::SLerp(FQuat const& q1, FQuat const& q2, float t)
 
 FVec3 lm::operator*(const FVec3& v, FQuat const& q)
 {
-
 	return FQuat::Inverse(q) * v;
 }
 
 FVec4 lm::operator*(const FVec4& v, FQuat const& q)
 {
-
 	return FQuat::Inverse(q) * v;
 }
 
 FQuat lm::operator*(float const& s, FQuat const& q)
 {
-
 	return q * s;
 }
 
 std::ostream& lm::operator<<(std::ostream& os, FQuat const& q)
 {
-
 	os << "FQuat(" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << ")";
 	return os;
 }
 
 std::istream& lm::operator>>(std::istream& is, FQuat& q)
 {
-
 	char c;
 
 	// Remove "FQuat("
