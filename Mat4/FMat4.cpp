@@ -8,7 +8,6 @@ const FMat4 FMat4::IdentityMatrix(1.0f);
 
 FMat4::FMat4(float p_init)
 {
-
 	m_matrix[0] = FVec4(p_init, 0, 0, 0);
 	m_matrix[1] = FVec4(0, p_init, 0, 0);
 	m_matrix[2] = FVec4(0, 0, p_init, 0);
@@ -51,10 +50,8 @@ FMat4::FMat4(FVec4 p_row1, FVec4 p_row2, FVec4 p_row3, FVec4 p_row4)
 
 FMat4::FMat4(const FVec3& p_position, const FQuat& p_rotation)
 {
-
-	FMat4 result = FMat4::ToMat4(FQuat::ToRotateMat3(p_rotation));
-
-	result = FMat4::Translate(result, p_position);
+	FMat4 result = FQuat::ToRotateMat3(p_rotation);
+	result = FMat4::Translate(result,p_position);
 	*this = result;
 }
 
@@ -68,7 +65,6 @@ FMat4::FMat4(const FMat4& p_toCopy)
 		}
 	}
 }
-
 
 lm::FMat4::FMat4(const FMat3& p_toCopy)
 {
@@ -127,7 +123,6 @@ FMat4& FMat4::operator*=(const FMat4& p_other)
 
 FVec4 FMat4::operator*(const FVec4& p_other) const
 {
-
 	FVec4 result = {
 		m_matrix[0].x * p_other.x + m_matrix[1].x * p_other.y + m_matrix[2].x * p_other.z + m_matrix[3].x,
 		m_matrix[0].y * p_other.x + m_matrix[1].y * p_other.y + m_matrix[2].y * p_other.z + m_matrix[3].y,
@@ -148,7 +143,6 @@ FVec3 FMat4::operator*(const FVec3& p_other) const
 	};
 	return FVec3{ result.x / result.w, result.y / result.w, result.z / result.w };
 }
-
 
 FMat4 FMat4::operator*(float p_scalar) const
 {
@@ -213,7 +207,6 @@ FMat4 FMat4::operator-() const
 	}
 	return result;
 }
-
 
 bool lm::FMat4::IsOrthogonal() const
 {
@@ -310,7 +303,6 @@ const FVec4& FMat4::operator[](int p_index) const
 	return m_matrix[p_index];
 }
 
-
 FMat4 FMat4::Identity()
 {
 	FMat4 result;
@@ -330,20 +322,33 @@ FMat4 FMat4::Translation(const FVec3& p_translation)
 	return result;
 }
 
-
 FMat4 FMat4::RotationEuler(const FVec3& p_rotation)
 {
-	FMat4 result = FMat4::Identity();
-	result[0][0] = cos(p_rotation.y) * cos(p_rotation.z);
-	result[1][0] = cos(p_rotation.y) * sin(p_rotation.z);
-	result[2][0] = -sin(p_rotation.y);
-	result[0][1] = sin(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) - cos(p_rotation.x) * sin(p_rotation.z);
-	result[1][1] = sin(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) + cos(p_rotation.x) * cos(p_rotation.z);
-	result[2][1] = sin(p_rotation.x) * cos(p_rotation.y);
-	result[0][2] = cos(p_rotation.x) * sin(p_rotation.y) * cos(p_rotation.z) + sin(p_rotation.x) * sin(p_rotation.z);
-	result[1][2] = cos(p_rotation.x) * sin(p_rotation.y) * sin(p_rotation.z) - sin(p_rotation.x) * cos(p_rotation.z);
-	result[2][2] = cos(p_rotation.x) * cos(p_rotation.y);
-	return result;
+	const float yaw = p_rotation.x;
+	const float pitch = p_rotation.y;
+	const float roll = p_rotation.z;
+
+	const float cosYaw = std::cosf(-yaw);
+	const float sinYaw = std::sinf(-yaw);
+	const float cosPitch = std::cosf(-pitch);
+	const float sinPitch = std::sinf(-pitch);
+	const float cosRoll = std::cosf(-roll);
+	const float sinRoll = std::sinf(-roll);
+
+	FMat4 Result = FMat4::Identity();
+	Result[0][0] = cosPitch * cosRoll;
+	Result[0][1] = -cosYaw * sinRoll + sinYaw * sinPitch * cosRoll;
+	Result[0][2] = sinYaw * sinRoll + cosYaw * sinPitch * cosRoll;
+
+	Result[1][0] = cosPitch * sinRoll;
+	Result[1][1] = cosYaw * cosRoll + sinYaw * sinPitch * sinRoll;
+	Result[1][2] = -sinYaw * cosRoll + cosYaw * sinPitch * sinRoll;
+
+	Result[2][0] = -sinPitch;
+	Result[2][1] = sinYaw * cosPitch;
+	Result[2][2] = cosYaw * cosPitch;
+
+	return Result;
 }
 
 FMat4 FMat4::Scale(const FVec3& p_scale)
@@ -450,13 +455,12 @@ FMat4 FMat4::Rotate(const FMat4& p_matrix, const FVec3& p_rotation)
 {
 	FMat4 result = p_matrix;
 
-	result = FMat4::ZRotation(Identity(), p_rotation.z) * FMat4::XRotation(Identity(), p_rotation.x) * FMat4::YRotation(Identity(), p_rotation.y);
-	return result;
+	return result * YXZRotation(p_rotation);
 }
 
 FMat4 FMat4::Rotate(const FMat4& p_matrix, float p_angle, const FVec3& p_axis)
 {
-	float const a = p_angle;
+	float const a = TO_RADIANS(p_angle);
 	float const c = cos(a);
 	float const s = sin(a);
 
@@ -513,7 +517,7 @@ FMat4 FMat4::Transform(const FVec3& p_translation, const FVec3& p_rotation, cons
 {
 	FMat4 result = FMat4::Identity();
 
-	result = FMat4::Translation(p_translation) * FMat4::YXZRotation(p_rotation) * FMat4::Scale(result, p_scale);
+	result = FMat4::Translation(p_translation) * ZRotation(p_rotation.z) * XRotation(p_rotation.x) * YRotation(p_rotation.y) * FMat4::Scale(result, p_scale);
 	return result;
 }
 
@@ -524,8 +528,8 @@ FMat4 FMat4::XRotation(float p_angle)
 	float cos = cosf(radAngle);
 	float sin = sinf(radAngle);
 	result[1][1] = cos;
-	result[1][2] = -sin;
-	result[2][1] = sin;
+	result[1][2] = sin;
+	result[2][1] = -sin;
 	result[2][2] = cos;
 	return result;
 }
@@ -544,8 +548,8 @@ FMat4 FMat4::YRotation(float p_angle)
 	float cos = cosf(radAngle);
 	float sin = sinf(radAngle);
 	result[0][0] = cos;
-	result[0][2] = sin;
-	result[2][0] = -sin;
+	result[0][2] = -sin;
+	result[2][0] = sin;
 	result[2][2] = cos;
 	return result;
 }
@@ -564,8 +568,8 @@ FMat4 FMat4::ZRotation(float p_angle)
 	float cos = cosf(radAngle);
 	float sin = sinf(radAngle);
 	result[0][0] = cos;
-	result[0][1] = -sin;
-	result[1][0] = sin;
+	result[0][1] = sin;
+	result[1][0] = -sin;
 	result[1][1] = cos;
 	return result;
 }
@@ -577,14 +581,35 @@ FMat4 FMat4::ZRotation(const FMat4& p_matrix, float p_angle)
 	return result;
 }
 
-
 FMat4 FMat4::YXZRotation(const FVec3& p_rotation)
 {
-	FMat4 result = FMat4::Identity();
-	result = FMat4::ZRotation(p_rotation.z) * FMat4::XRotation(p_rotation.x) * FMat4::YRotation(p_rotation.y);
-	return result;
-}
+	float yaw = p_rotation.x;
+	float pitch = p_rotation.y;
+	float roll = p_rotation.z;
 
+	FMat4 Result = FMat4::Identity();
+	float cosYaw = cosf(yaw);
+	float sinYaw = sinf(yaw);
+	float cosPitch = cosf(pitch);
+	float sinPitch = sinf(pitch);
+	float cosRoll = cosf(roll);
+	float sinRoll = sinf(roll);
+
+	Result[0][0] = cosYaw * cosRoll + sinYaw * sinPitch * sinRoll;
+	Result[0][1] = sinRoll * cosPitch;
+	Result[0][2] = -sinYaw * cosRoll + cosYaw * sinPitch * sinRoll;
+	Result[0][3] = float(0);
+	Result[1][0] = -cosYaw * sinRoll + sinYaw * sinPitch * cosRoll;
+	Result[1][1] = cosRoll * cosPitch;
+	Result[1][2] = sinRoll * sinYaw + cosYaw * sinPitch * cosRoll;
+	Result[1][3] = float(0);
+	Result[2][0] = sinYaw * cosPitch;
+	Result[2][1] = -sinPitch;
+	Result[2][2] = cosYaw * cosPitch;
+	Result[2][3] = float(0);
+	Result[3] = FVec4(0, 0, 0, 1);
+	return Result;
+}
 
 float* FMat4::ToArray(const FMat4& p_matrix)
 {
@@ -652,20 +677,20 @@ FMat4 lm::FMat4::Inverse(const FMat4& p_matrix)
 
 	FVec4 Fac0(Coef00, Coef00, Coef02, Coef03);
 	FVec4 Fac1(Coef04, Coef04, Coef06, Coef07);
-	FVec4 Fac2(Coef08, Coef08, Coef10, Coef11);
+	FVec4 FacosPitch(Coef08, Coef08, Coef10, Coef11);
 	FVec4 Fac3(Coef12, Coef12, Coef14, Coef15);
 	FVec4 Fac4(Coef16, Coef16, Coef18, Coef19);
 	FVec4 Fac5(Coef20, Coef20, Coef22, Coef23);
 
 	FVec4 Vec0(p_matrix[1][0], p_matrix[0][0], p_matrix[0][0], p_matrix[0][0]);
 	FVec4 Vec1(p_matrix[1][1], p_matrix[0][1], p_matrix[0][1], p_matrix[0][1]);
-	FVec4 Vec2(p_matrix[1][2], p_matrix[0][2], p_matrix[0][2], p_matrix[0][2]);
+	FVec4 VecosPitch(p_matrix[1][2], p_matrix[0][2], p_matrix[0][2], p_matrix[0][2]);
 	FVec4 Vec3(p_matrix[1][3], p_matrix[0][3], p_matrix[0][3], p_matrix[0][3]);
 
-	FVec4 Inv0(Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
-	FVec4 Inv1(Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	FVec4 Inv0(Vec1 * Fac0 - VecosPitch * Fac1 + Vec3 * FacosPitch);
+	FVec4 Inv1(Vec0 * Fac0 - VecosPitch * Fac3 + Vec3 * Fac4);
 	FVec4 Inv2(Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
-	FVec4 Inv3(Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+	FVec4 Inv3(Vec0 * FacosPitch - Vec1 * Fac4 + VecosPitch * Fac5);
 
 	FVec4 SignA(+1, -1, +1, -1);
 	FVec4 SignB(-1, +1, -1, +1);
