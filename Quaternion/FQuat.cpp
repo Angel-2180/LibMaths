@@ -26,7 +26,7 @@ lm::FQuat::FQuat(FVec3 axis, float angle)
 	w = cos(radAngle / 2);
 }
 
-lm::FQuat::FQuat(const FMat3& other) { FromMatrix3(other); }
+lm::FQuat::FQuat(const FMat3& other) { *this = FromMatrix3(other); }
 
 const FQuat FQuat::identity = FQuat(0, 0, 0, 1);
 
