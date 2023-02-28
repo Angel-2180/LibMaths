@@ -53,6 +53,9 @@ namespace lm
         */
         FMat4(const FMat4& p_toCopy);
         FMat4(FMat4&& p_toMove) noexcept = default;
+        FMat4(const FMat3& p_toCopy);
+
+        FMat4& operator=(const FMat3& p_other);
         FMat4& operator=(const FMat4& p_other);
         FMat4& operator=(FMat4&& p_other) noexcept = default;
         ~FMat4() = default;
@@ -72,10 +75,6 @@ namespace lm
         bool operator!=(const FMat4& p_other) const;
         FVec4& operator[](int p_index);
         const FVec4& operator[](int p_index) const;
-        float operator()(int p_row, int p_column);
-        const float operator()(int p_row, int p_column) const;
-        float& operator[](const char* p_index);
-        const float& operator[](const char* p_index) const;
         FMat4 operator-() const;
 
         bool IsOrthogonal() const;
@@ -95,10 +94,10 @@ namespace lm
 
         /**
          * @brief Creates a new rotation matrix
-         * @param p_rotation The rotation vector
+         * @param p_rotation The rotation vector wiht Euler angles
          * @note The rotation vector is in radians
         */
-        static FMat4 Rotation(const FVec3& p_rotation);
+        static FMat4 RotationEuler(const FVec3& p_rotation);
 
         /**
          * @brief Creates a new scale matrix
@@ -203,6 +202,8 @@ namespace lm
         */
         static FMat4 Transform(const FVec3& p_translation, const FVec3& p_rotation, const FVec3& p_scale);
 
+        static FMat4 Transform(const FVec3& p_translation, const FQuat& p_rotation, const FVec3& p_scale);
+
         /**
          * @brief Creates a new Rotation matrix around the X axis
          * @param p_angle The angle of rotation
@@ -264,16 +265,7 @@ namespace lm
          * @note The angle is in degrees
          * @note The matrix is not multiplied by the current matrix
         */
-        static FMat4 XYZRotation(const FVec3& p_rotation);
-
-        /**
-         * @brief Creates a new Rotation matrix using the ZXY rotation order from the passed matrix
-         * @param p_matrix The matrix to rotate
-         * @param p_angle The angle of rotation
-         * @return The rotation matrix
-         * @note The angle is in degrees
-        */
-        static FMat4 XYZRotation(const FMat4& p_matrix, const FVec3& p_rotation);
+        static FMat4 YXZRotation(const FVec3& p_rotation);
 
         /**
          * @brief Converts the matrix to an array
