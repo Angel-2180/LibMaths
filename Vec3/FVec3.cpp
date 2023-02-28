@@ -85,15 +85,17 @@ FVec3& lm::FVec3::operator/(const FVec3& p_other)
     result.x /= p_other.x;
     result.y /= p_other.y;
     result.z /= p_other.z;
-    return result;
+    *this = result;
+    return *this;
 }
 
-FVec3& lm::FVec3::operator/(const FVec3& p_other) const
+FVec3 lm::FVec3::operator/(const FVec3& p_other) const
 {
     FVec3 result = *this;
     result.x /= p_other.x;
     result.y /= p_other.y;
     result.z /= p_other.z;
+
     return result;
 }
 
@@ -283,13 +285,12 @@ FVec3 FVec3::Lerp(const FVec3& p_start, const FVec3& p_end, float p_alpha)
 
 float FVec3::AngleBetween(const FVec3& p_from, const FVec3& p_to)
 {
-   auto vec1 =  Normalize(p_from);
-   auto vec2 = Normalize(p_to);
+    auto vec1 = Normalize(p_from);
+    auto vec2 = Normalize(p_to);
     float dot = Dot(vec1, vec2);
     float lenSq1 = Length2(vec1);
     float lenSq2 = Length2(vec2);
     return std::acos(dot / std::sqrt(lenSq1 * lenSq2));
-
 }
 
 FVec3 FVec3::Project(const FVec3& p_target, const FVec3& p_onNormal)

@@ -82,7 +82,7 @@ namespace lm
         */
         FVec3& operator/(const FVec3& p_other);
 
-        FVec3& operator/(const FVec3& p_other) const;
+        FVec3 operator/(const FVec3& p_other) const;
 
         /**
         * Calcualte the multiplication of a vector with a scalar
