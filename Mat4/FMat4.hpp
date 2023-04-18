@@ -280,6 +280,13 @@ namespace lm
         */
         static FMat4 ToMat4(const FMat3& p_matrix);
 
+        /// @brief 
+        /// @param p_position 
+        /// @param p_rotation 
+        /// @param p_scale 
+        /// @return 
+        static void Decompose(const FMat4& p_mat,  FVec3& p_position,  FVec3& p_rotation,  FVec3& p_scale);
+
         /**
          * @brief inverts a matrix
          * @param p_matrix The matrix to invert

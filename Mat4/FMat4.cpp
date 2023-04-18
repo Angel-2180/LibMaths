@@ -655,6 +655,35 @@ FMat4 lm::FMat4::ToMat4(const FMat3& p_matrix)
     return result;
 }
 
+void lm::FMat4::Decompose(const FMat4 &p_mat,  FVec3 &p_position,  FVec3 &p_rotation,  FVec3 &p_scale)
+{
+    p_position = FVec3(p_mat[3][0], p_mat[3][1], p_mat[3][2]);
+
+    p_scale.x = FVec3::Length(FVec3(p_mat[0][0], p_mat[0][1], p_mat[0][2]));
+    p_scale.y = FVec3::Length(FVec3(p_mat[1][0], p_mat[1][1], p_mat[1][2]));
+    p_scale.z = FVec3::Length(FVec3(p_mat[2][0], p_mat[2][1], p_mat[2][2]));
+
+    FMat4 rot = p_mat;
+    rot[0][0] /= p_scale.x;
+    rot[0][1] /= p_scale.x;
+    rot[0][2] /= p_scale.x;
+    rot[1][0] /= p_scale.y;
+    rot[1][1] /= p_scale.y;
+    rot[1][2] /= p_scale.y;
+    rot[2][0] /= p_scale.z;
+    rot[2][1] /= p_scale.z;
+    rot[2][2] /= p_scale.z;
+
+    p_rotation.x = atan2f(rot[2][1], rot[2][2]);
+    p_rotation.y = atan2f(-rot[2][0], sqrtf(rot[2][1] * rot[2][1] + rot[2][2] * rot[2][2]));
+    p_rotation.z = atan2f(rot[1][0], rot[0][0]);
+
+    p_rotation = FVec3 { radiansToDegrees(p_rotation.x),radiansToDegrees(p_rotation.y), radiansToDegrees(p_rotation.z)};
+
+}
+
+
+
 FMat4 lm::FMat4::Inverse(const FMat4& p_matrix)
 {
     float Coef00 = p_matrix[2][2] * p_matrix[3][3] - p_matrix[3][2] * p_matrix[2][3];
