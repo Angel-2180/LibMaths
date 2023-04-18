@@ -678,7 +678,11 @@ void lm::FMat4::Decompose(const FMat4 &p_mat,  FVec3 &p_position,  FVec3 &p_rota
     p_rotation.y = atan2f(-rot[2][0], sqrtf(rot[2][1] * rot[2][1] + rot[2][2] * rot[2][2]));
     p_rotation.z = atan2f(rot[1][0], rot[0][0]);
 
-    p_rotation = FVec3 { radiansToDegrees(p_rotation.x),radiansToDegrees(p_rotation.y), radiansToDegrees(p_rotation.z)};
+    float x = radiansToDegrees(p_rotation.x);
+    float y = radiansToDegrees(p_rotation.y);
+    float z = radiansToDegrees(p_rotation.z);
+
+    p_rotation = FVec3 { x, y, z };
 
 }
 
