@@ -78,9 +78,13 @@ namespace lm
         */
         FVec2 operator*(float p_scalar) const;
 
+        FVec2 operator*(const FVec2& p_other) const;
+
         FVec2& operator*=(const FVec2& p_other);
 
         FVec2& operator/=(const FVec2& p_other);
+
+        FVec2 operator/(const FVec2& p_other) const;
 
         /**
         * Multiply the vector by a scalar
