@@ -46,4 +46,14 @@ namespace lm
 	{
 		return value < min ? min : (value > max ? max : value);
 	}
+
+	inline float randomFloat(const float min, const float max)
+	{
+		return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
+	}
+
+	inline int randomInt(const int min, const int max)
+	{
+		return min + rand() % (max - min + 1);
+	}
 }
